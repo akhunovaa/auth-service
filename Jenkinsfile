@@ -1,8 +1,6 @@
 pipeline {
     agent any
-    tools {
-        maven '3.10.0-957.el7.x86_64'
-    }
+
     stages {
 
         stage('Checkout') {
