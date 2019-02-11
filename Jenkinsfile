@@ -41,7 +41,7 @@ pipeline {
         stage('Push Docker image') {
             steps {
                 echo 'Push Docker image'
-                withCredentials([string(credentialsId: 'docker_password', variable: 'dockerHubPwd')]) {
+                withCredentials([string(credentialsId: 'dockerHubPwd', variable: 'dockerHubPwd')]) {
                     sh "docker login -u leon4uk -p ${dockerHubPwd}"
                 }
                 sh 'docker push leon4uk/botmasterzzz-auth:1.0.0'
