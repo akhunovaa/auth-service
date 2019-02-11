@@ -52,7 +52,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo '## Deploy locally ##'
-                withCredentials([string(credentialsId: 'docker_password', variable: 'dockerHubPwd')]) {
+                withCredentials([string(credentialsId: 'dockerHubPwd', variable: 'dockerHubPwd')]) {
                     sh "docker login -u leon4uk -p ${dockerHubPwd}"
                 }
                 sh 'docker ps -f name=botmasterzzz-auth -q | xargs --no-run-if-empty docker container stop'
