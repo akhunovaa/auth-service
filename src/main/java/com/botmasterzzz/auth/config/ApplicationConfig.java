@@ -1,5 +1,6 @@
 package com.botmasterzzz.auth.config;
 
+import liquibase.integration.spring.SpringLiquibase;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,15 @@ public class ApplicationConfig implements WebApplicationInitializer {
         dataSource.setPassword(environment.getProperty("app.db.worker.password"));
         return dataSource;
     }
+
+    @Bean
+    public SpringLiquibase liquibase() {
+        SpringLiquibase liquibase = new SpringLiquibase();
+        liquibase.setDataSource(dataSource());
+        liquibase.setChangeLog("classpath:liquibase/main_tables_changelog.xml");
+        return liquibase;
+    }
+
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {

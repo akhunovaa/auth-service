@@ -1,0 +1,172 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="4_sec_user_role" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <createTable tableName="sec_user_role" schemaName="public">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="role_name" type="VARCHAR"/>
+            <column name="username" type="VARCHAR"/>
+            <column name="note" type="VARCHAR"/>
+            <column name="aud_when_create" type="TIMESTAMP"/>
+            <column name="aud_when_update" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4_sec_user" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <createTable tableName="sec_user" schemaName="public">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="note" type="VARCHAR">
+            </column>
+            <column name="username" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="INTEGER">
+                <constraints nullable="false" foreignKeyName="fk_sec_user_key" referencedTableName="sec_user_role"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="is_blocked" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="is_enabled" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="last_login" type="TIMESTAMP"/>
+            <column name="aud_when_create" type="TIMESTAMP"/>
+            <column name="aud_when_update" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1_oauth_client_details" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <createTable tableName="oauth_client_details" schemaName="public">
+            <column name="client_id" type="VARCHAR(256)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="resource_ids" type="VARCHAR(256)"/>
+            <column name="client_secret" type="VARCHAR(256)"/>
+            <column name="scope" type="VARCHAR(256)"/>
+            <column name="authorized_grant_types" type="VARCHAR(256)"/>
+            <column name="web_server_redirect_uri" type="VARCHAR(256)"/>
+            <column name="authorities" type="VARCHAR(256)"/>
+            <column name="access_token_validity" type="INTEGER"/>
+            <column name="refresh_token_validity" type="INTEGER"/>
+            <column name="additional_information" type="VARCHAR(4096)"/>
+            <column name="autoapprove" type="VARCHAR(256)"/>
+            <column name="aud_when_create" type="TIMESTAMP"/>
+            <column name="aud_when_update" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1_oauth_access_token" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <createTable tableName="oauth_access_token" schemaName="public">
+            <column name="token_id" type="VARCHAR(255)"/>
+            <column name="token" type="bytea"/>
+            <column name="authentication_id" type="VARCHAR(255)"/>
+            <column name="user_name" type="VARCHAR(255)"/>
+            <column name="client_id" type="VARCHAR(255)"/>
+            <column name="authentication" type="bytea"/>
+            <column name="refresh_token" type="VARCHAR(255)"/>
+            <column name="aud_when_create" type="TIMESTAMP"/>
+            <column name="aud_when_update" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1_4_aud_trigger_function" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <createProcedure>
+            CREATE OR REPLACE FUNCTION aud_trigger()
+            RETURNS trigger AS
+            $BODY$
+            begin
+            if (TG_OP = 'INSERT') then
+            NEW.aud_when_create = now();
+            NEW.aud_when_update = now();
+            end if;
+            if (TG_OP = 'UPDATE') then
+            NEW.aud_when_update = now();
+            end if;
+            return new;
+            end;
+            $BODY$
+            LANGUAGE plpgsql VOLATILE
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="1_4_sec_user" failOnError="true" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <sql>
+            DROP TRIGGER IF EXISTS sec_user_aud_trigger ON sec_user;
+            CREATE TRIGGER sec_user_aud_trigger BEFORE INSERT OR UPDATE ON sec_user FOR EACH ROW EXECUTE PROCEDURE
+            aud_trigger();
+        </sql>
+        <rollback>
+            DROP TRIGGER sec_user_aud_trigger ON sec_user;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="1_4_sec_user_role" failOnError="true" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <sql>
+            DROP TRIGGER IF EXISTS sec_user_role_aud_trigger ON sec_user_role;
+            CREATE TRIGGER sec_user_role_aud_trigger BEFORE INSERT OR UPDATE ON sec_user_role FOR EACH ROW EXECUTE PROCEDURE
+            aud_trigger();
+        </sql>
+        <rollback>
+            DROP TRIGGER sec_user_role_aud_trigger ON sec_user_role;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="1_1_oauth_client_details" failOnError="true" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <sql>
+            DROP TRIGGER IF EXISTS oauth_client_details_aud_trigger ON oauth_client_details;
+            CREATE TRIGGER oauth_client_details_aud_trigger BEFORE INSERT OR UPDATE ON oauth_client_details FOR EACH ROW EXECUTE PROCEDURE
+            aud_trigger();
+        </sql>
+        <rollback>
+            DROP TRIGGER oauth_client_details_aud_trigger ON oauth_client_details;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="1_1_oauth_access_token" failOnError="true" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <sql>
+            DROP TRIGGER IF EXISTS oauth_access_token_aud_trigger ON oauth_access_token;
+            CREATE TRIGGER oauth_access_token_aud_trigger BEFORE INSERT OR UPDATE ON oauth_access_token FOR EACH ROW EXECUTE PROCEDURE
+            aud_trigger();
+        </sql>
+        <rollback>
+            DROP TRIGGER oauth_access_token_aud_trigger ON oauth_access_token;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="4_sec_user_role_data" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <sql>
+            DELETE FROM sec_user_role WHERE note = 'liquibase_changeset_sec_user_role_data';
+            INSERT INTO sec_user_role(id, role_name, note, username) values(nextval('sec_user_role_id_seq'), 'ADMIN', 'liquibase_changeset_sec_user_role_data', 'admin');
+            INSERT INTO sec_user_role(id, role_name, note, username) values(nextval('sec_user_role_id_seq'), 'EXTERNAL_ADMIN', 'liquibase_changeset_sec_user_role_data', 'exadmin');
+            INSERT INTO sec_user_role(id, role_name, note, username) values(nextval('sec_user_role_id_seq'), 'EXTERNAL_MANAGER', 'liquibase_changeset_sec_user_role_data', 'exmanager');
+            INSERT INTO sec_user_role(id, role_name, note, username) values(nextval('sec_user_role_id_seq'), 'USER', 'liquibase_changeset_sec_user_role_data', 'user');
+            INSERT INTO sec_user(id, note, username, password, role_id, is_blocked, is_enabled) values(nextval('sec_user_id_seq'), 'iPhone TECHNOLOGY APPLE Gallery ZIGZAG Washington Gallery Jack Drip YOU Drip Xbox Egg DRIP XBOX NUT', 'admin', 'iTAgZwgjdYdxeDXN', (select id from sec_user_role where username = 'admin'), false, true);
+            INSERT INTO sec_user(id, note, username, password, role_id, is_blocked, is_enabled) values(nextval('sec_user_id_seq'), 'EGG GALLERY SHOOT Zigzag ZIGZAG MUSIC SHOOT Xbox Fruit IPHONE APPLE BANANA Shoot Laptop Shoot Fruit', 'exadmin', 'EGSzZMSxfIABslsf', (select id from sec_user_role where username = 'exadmin'), false, true);
+            INSERT INTO sec_user(id, note, username, password, role_id, is_blocked, is_enabled) values(nextval('sec_user_id_seq'), 'Zigzag Washington VISA Occupation OCCUPATION MUSIC LAPTOP Hero ZIGZAG Occupation Apple VISA EGG Zigzag Laptop Drip', 'exmanager', 'zwVoOMLhZoaVEzld', (select id from sec_user_role where username = 'exmanager'), false, true);
+            INSERT INTO sec_user(id, note, username, password, role_id, is_blocked, is_enabled) values(nextval('sec_user_id_seq'), 'JACK iPhone Apple GALLERY Occupation Rope iPhone APPLE UMBRELLA APPLE Umbrella LAPTOP ZIGZAG Egg Xbox ZIGZAG', 'user', 'JiaGoriAUAuLZexZ', (select id from sec_user_role where username = 'user'), false, true);
+        </sql>
+    </changeSet>
+
+    <changeSet id="4_oauth_client_details_data" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <sql>
+            delete from oauth_client_details;
+            INSERT INTO oauth_client_details(client_id, client_secret, scope, authorized_grant_types, web_server_redirect_uri, authorities, access_token_validity, refresh_token_validity, additional_information, autoapprove) VALUES ('web_application', '123456', 'write','authorization_code, refresh_token', 'https://botmasterzzz.com/', null, 36000, 36000, null, 'true');
+            INSERT INTO oauth_client_details(client_id, client_secret, scope, authorized_grant_types, web_server_redirect_uri, authorities, access_token_validity, refresh_token_validity, additional_information, autoapprove) VALUES ('secret_application', 'secret_secret', 'write','authorization_code, refresh_token', 'https://botmasterzzz.com/', null, 0, 0, null, 'true');
+        </sql>
+    </changeSet>
+
+    <changeSet id="1_oauth_access_token_data" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <sql>
+            delete from oauth_access_token;
+            insert into oauth_access_token(token_id, token, authentication_id, user_name, client_id, authentication, refresh_token) values ('49c3a9bea88f8591f8d24523b2348c56', E'\\xACED0005737200436F72672E737072696E676672616D65776F726B2E73656375726974792E6F61757468322E636F6D6D6F6E2E44656661756C744F4175746832416363657373546F6B656E0CB29E361B24FACE0200064C00156164646974696F6E616C496E666F726D6174696F6E74000F4C6A6176612F7574696C2F4D61703B4C000A65787069726174696F6E7400104C6A6176612F7574696C2F446174653B4C000C72656672657368546F6B656E74003F4C6F72672F737072696E676672616D65776F726B2F73656375726974792F6F61757468322F636F6D6D6F6E2F4F417574683252656672657368546F6B656E3B4C000573636F706574000F4C6A6176612F7574696C2F5365743B4C0009746F6B656E547970657400124C6A6176612F6C616E672F537472696E673B4C000576616C756571007E000578707372001E6A6176612E7574696C2E436F6C6C656374696F6E7324456D7074794D6170593614855ADCE7D002000078707070737200256A6176612E7574696C2E436F6C6C656374696F6E7324556E6D6F6469666961626C65536574801D92D18F9B80550200007872002C6A6176612E7574696C2E436F6C6C656374696F6E7324556E6D6F6469666961626C65436F6C6C656374696F6E19420080CB5EF71E0200014C0001637400164C6A6176612F7574696C2F436F6C6C656374696F6E3B7870737200176A6176612E7574696C2E4C696E6B656448617368536574D86CD75A95DD2A1E020000787200116A6176612E7574696C2E48617368536574BA44859596B8B7340300007870770C000000103F4000000000000174000577726974657874000662656172657274002462323836336431322D313537392D343635622D393861382D393934653437616366663866', '111daa25dd283b3d19aea29cbd6d071f', 'admin', 'secret_application', E'\\xACED0005737200416F72672E737072696E676672616D65776F726B2E73656375726974792E6F61757468322E70726F76696465722E4F417574683241757468656E7469636174696F6EBD400B02166252130200024C000D73746F7265645265717565737474003C4C6F72672F737072696E676672616D65776F726B2F73656375726974792F6F61757468322F70726F76696465722F4F4175746832526571756573743B4C00127573657241757468656E7469636174696F6E7400324C6F72672F737072696E676672616D65776F726B2F73656375726974792F636F72652F41757468656E7469636174696F6E3B787200476F72672E737072696E676672616D65776F726B2E73656375726974792E61757468656E7469636174696F6E2E416273747261637441757468656E7469636174696F6E546F6B656ED3AA287E6E47640E0200035A000D61757468656E746963617465644C000B617574686F7269746965737400164C6A6176612F7574696C2F436F6C6C656374696F6E3B4C000764657461696C737400124C6A6176612F6C616E672F4F626A6563743B787000737200266A6176612E7574696C2E436F6C6C656374696F6E7324556E6D6F6469666961626C654C697374FC0F2531B5EC8E100200014C00046C6973747400104C6A6176612F7574696C2F4C6973743B7872002C6A6176612E7574696C2E436F6C6C656374696F6E7324556E6D6F6469666961626C65436F6C6C656374696F6E19420080CB5EF71E0200014C00016371007E00047870737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A65787000000001770400000001737200426F72672E737072696E676672616D65776F726B2E73656375726974792E636F72652E617574686F726974792E53696D706C654772616E746564417574686F7269747900000000000001400200014C0004726F6C657400124C6A6176612F6C616E672F537472696E673B787074000541444D494E7871007E000C707372003A6F72672E737072696E676672616D65776F726B2E73656375726974792E6F61757468322E70726F76696465722E4F41757468325265717565737400000000000000010200075A0008617070726F7665644C000B617574686F72697469657371007E00044C000A657874656E73696F6E7374000F4C6A6176612F7574696C2F4D61703B4C000B726564697265637455726971007E000E4C00077265667265736874003B4C6F72672F737072696E676672616D65776F726B2F73656375726974792F6F61757468322F70726F76696465722F546F6B656E526571756573743B4C000B7265736F7572636549647374000F4C6A6176612F7574696C2F5365743B4C000D726573706F6E7365547970657371007E0014787200386F72672E737072696E676672616D65776F726B2E73656375726974792E6F61757468322E70726F76696465722E426173655265717565737436287A3EA37169BD0200034C0008636C69656E74496471007E000E4C001172657175657374506172616D657465727371007E00124C000573636F706571007E001478707400127365637265745F6170706C69636174696F6E737200256A6176612E7574696C2E436F6C6C656374696F6E7324556E6D6F6469666961626C654D6170F1A5A8FE74F507420200014C00016D71007E00127870737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F400000000000067708000000080000000474000D726573706F6E73655F74797065740004636F6465740004636F64657400067476326E546E74000A6772616E745F74797065740012617574686F72697A6174696F6E5F636F6465740009636C69656E745F696471007E001778737200256A6176612E7574696C2E436F6C6C656374696F6E7324556E6D6F6469666961626C65536574801D92D18F9B80550200007871007E0009737200176A6176612E7574696C2E4C696E6B656448617368536574D86CD75A95DD2A1E020000787200116A6176612E7574696C2E48617368536574BA44859596B8B7340300007870770C000000103F40000000000001740005777269746578017371007E0026770C000000103F40000000000000787371007E001A3F40000000000000770800000010000000007874001668747470733A2F2F6C6F63616C686F73743A38303630707371007E0026770C000000103F40000000000000787371007E0026770C000000103F4000000000000171007E001D787372004F6F72672E737072696E676672616D65776F726B2E73656375726974792E61757468656E7469636174696F6E2E557365726E616D6550617373776F726441757468656E7469636174696F6E546F6B656E00000000000001400200024C000B63726564656E7469616C7371007E00054C00097072696E636970616C71007E00057871007E0003017371007E00077371007E000B0000000177040000000171007E000F7871007E0031737200486F72672E737072696E676672616D65776F726B2E73656375726974792E7765622E61757468656E7469636174696F6E2E57656241757468656E7469636174696F6E44657461696C7300000000000001400200024C000D72656D6F74654164647265737371007E000E4C000973657373696F6E496471007E000E787074000F303A303A303A303A303A303A303A31740020303435463038333645303337353736444146413234393334464143323838384370737200326F72672E737072696E676672616D65776F726B2E73656375726974792E636F72652E7573657264657461696C732E5573657200000000000001400200075A00116163636F756E744E6F6E457870697265645A00106163636F756E744E6F6E4C6F636B65645A001563726564656E7469616C734E6F6E457870697265645A0007656E61626C65644C000B617574686F72697469657371007E00144C000870617373776F726471007E000E4C0008757365726E616D6571007E000E7870010101017371007E0023737200116A6176612E7574696C2E54726565536574DD98509395ED875B0300007870737200466F72672E737072696E676672616D65776F726B2E73656375726974792E636F72652E7573657264657461696C732E5573657224417574686F72697479436F6D70617261746F720000000000000140020000787077040000000171007E000F787074000561646D696E', null);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
