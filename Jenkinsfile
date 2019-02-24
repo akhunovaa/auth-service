@@ -55,10 +55,13 @@ pipeline {
                 withCredentials([string(credentialsId: 'dockerHubPwd', variable: 'dockerHubPwd')]) {
                     sh "docker login -u leon4uk -p ${dockerHubPwd}"
                 }
-                sh 'docker ps -f name=botmasterzzz-auth -q | xargs --no-run-if-empty docker container stop'
+                sh "docker container ls -a -f name=botmasterzzz-auth -q | xargs --no-run-if-empty docker container stop"
                 sh 'docker container ls -a -f name=botmasterzzz-auth -q | xargs -r docker container rm'
-                sh "docker images --format '{{.Repository}}:{{.Tag}}' | grep 'botmasterzzz-auth' | xargs --no-run-if-empty docker rmi"
                 sh 'docker run --name botmasterzzz-auth -d --net=botmasterzzznetwork -p 127.0.0.1:8060:8060 leon4uk/botmasterzzz-auth:1.0.0'
+                //sh 'docker ps -f name=botmasterzzz-auth -q | xargs --no-run-if-empty docker container stop'
+                //sh 'docker container ls -a -f name=botmasterzzz-auth -q | xargs -r docker container rm'
+               // sh "docker images --format '{{.Repository}}:{{.Tag}}' | grep 'botmasterzzz-auth' | xargs --no-run-if-empty docker rmi"
+                //sh 'docker run --name botmasterzzz-auth -d --net=botmasterzzznetwork -p 127.0.0.1:8060:8060 leon4uk/botmasterzzz-auth:1.0.0'
             }
         }
     }
