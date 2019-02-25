@@ -65,11 +65,5 @@ pipeline {
             }
         }
 
-        stage('Liquibase generate') {
-            steps {
-                echo '## Liquibase generate##'
-                sh "mvn liquibase:generateChangeLog"
-            }
-        }
     }
 }

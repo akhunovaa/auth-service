@@ -6,9 +6,13 @@ import com.botmasterzzz.auth.security.oauth2.HttpCookieOAuth2AuthorizationReques
 import com.botmasterzzz.auth.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.botmasterzzz.auth.security.oauth2.OAuth2AuthenticationSuccessHandler;
 
+import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -20,6 +24,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.sql.DataSource;
 
 @EnableWebSecurity(debug = true)
 @Configuration
@@ -66,6 +72,23 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         authenticationManagerBuilder
                 .userDetailsService(customUserDetailsService)
                 .passwordEncoder(passwordEncoder());
+    }
+
+    @ConfigurationProperties(prefix = "datasource.postgres")
+    @Bean
+    @Primary
+    public DataSource dataSource() {
+        return DataSourceBuilder
+                .create()
+                .build();
+    }
+
+    @Bean
+    public SpringLiquibase liquibase() {
+        SpringLiquibase liquibase = new SpringLiquibase();
+        liquibase.setDataSource(dataSource());
+        liquibase.setChangeLog("classpath:liquibase/main_tables_changelog.xml");
+        return liquibase;
     }
 
     @Bean
