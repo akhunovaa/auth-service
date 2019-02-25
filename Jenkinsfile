@@ -64,5 +64,12 @@ pipeline {
                 //sh 'docker run --name botmasterzzz-auth -d --net=botmasterzzznetwork -p 127.0.0.1:8060:8060 leon4uk/botmasterzzz-auth:1.0.0'
             }
         }
+
+        stage('Liquibase generate') {
+            steps {
+                echo '## Liquibase generate##'
+                sh "mvn liquibase:generateChangeLog"
+            }
+        }
     }
 }
