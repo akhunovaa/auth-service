@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://botmasterzzzdb:5432/botmasterzzz_db
     username: postgres
-    password: qwerty
+    password: adminadmin
 
   jpa:
     show-sql: false

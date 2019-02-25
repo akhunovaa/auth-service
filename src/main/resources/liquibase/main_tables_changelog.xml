@@ -76,6 +76,19 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="2_users" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <createTable tableName="users" schemaName="public">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="emailverified" type="boolean"/>
+            <column name="aud_when_create" type="TIMESTAMP"/>
+            <column name="aud_when_update" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
     <changeSet id="1_4_aud_trigger_function" author="azat.akhunov@protonmail.com" runOnChange="true">
         <createProcedure>
             CREATE OR REPLACE FUNCTION aud_trigger()
@@ -137,6 +150,17 @@
         </sql>
         <rollback>
             DROP TRIGGER oauth_access_token_aud_trigger ON oauth_access_token;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="1_1_users" failOnError="true" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <sql>
+            DROP TRIGGER IF EXISTS users_aud_trigger ON users;
+            CREATE TRIGGER users_aud_trigger BEFORE INSERT OR UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE
+            aud_trigger();
+        </sql>
+        <rollback>
+            DROP TRIGGER users_aud_trigger ON users;
         </rollback>
     </changeSet>
 
