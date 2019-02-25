@@ -84,6 +84,8 @@
             <column name="name" type="VARCHAR(255)"/>
             <column name="email" type="VARCHAR(255)"/>
             <column name="email_verified" type="boolean"/>
+            <column name="image_url" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
             <column name="aud_when_create" type="TIMESTAMP"/>
             <column name="aud_when_update" type="TIMESTAMP"/>
         </createTable>
