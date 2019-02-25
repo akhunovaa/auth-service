@@ -7,9 +7,9 @@ import com.botmasterzzz.auth.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.botmasterzzz.auth.security.oauth2.OAuth2AuthenticationSuccessHandler;
 
 import liquibase.integration.spring.SpringLiquibase;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -78,9 +78,12 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Primary
     public DataSource dataSource() {
-        return DataSourceBuilder
-                .create()
-                .build();
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUrl("jdbc:postgresql://botmasterzzzdb:5432/botmasterzzz_db");
+        dataSource.setUsername("postgres");
+        dataSource.setPassword("adminadmin");
+        return dataSource;
     }
 
     @Bean

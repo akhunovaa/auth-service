@@ -87,6 +87,13 @@
             <artifactId>liquibase-maven-plugin</artifactId>
             <version>3.4.1</version>
         </dependency>
+
+        <!-- Apache Commons DBCP Apache Commons DBCP software implements Database Connection Pooling -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>2.5.0</version>
+        </dependency>
     </dependencies>
 
     <build>
