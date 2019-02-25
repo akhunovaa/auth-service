@@ -157,7 +157,7 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="2_1_users" failOnError="true" author="azat.akhunov@protonmail.com" runOnChange="true">
+    <changeSet id="2_2_users" failOnError="true" author="azat.akhunov@protonmail.com" runOnChange="true">
         <sql>
             DROP TRIGGER IF EXISTS users_aud_trigger ON users;
             CREATE TRIGGER users_aud_trigger BEFORE INSERT OR UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE
