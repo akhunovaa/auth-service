@@ -76,14 +76,14 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="2_users" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+    <changeSet id="3_users" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
         <createTable tableName="users" schemaName="public">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="name" type="VARCHAR(255)"/>
             <column name="email" type="VARCHAR(255)"/>
-            <column name="emailverified" type="boolean"/>
+            <column name="email_verified" type="boolean"/>
             <column name="aud_when_create" type="TIMESTAMP"/>
             <column name="aud_when_update" type="TIMESTAMP"/>
         </createTable>
