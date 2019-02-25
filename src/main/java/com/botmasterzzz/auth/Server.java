@@ -1,18 +1,25 @@
 package com.botmasterzzz.auth;
 
+import com.botmasterzzz.auth.config.AppProperties;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import javax.servlet.ServletException;
 
+@SpringBootApplication
+@EnableConfigurationProperties(AppProperties.class)
 public class Server {
 
     private static final int DEFAULT_PORT = 8060;
     private final Tomcat tomcat;
 
-    public static void main(String[] args) throws Exception {
-        new Server().run();
+    public static void main(String[] args) {
+        SpringApplication.run(Server.class, args);
     }
+
 
     public Server() throws ServletException {
         this(getPort());
