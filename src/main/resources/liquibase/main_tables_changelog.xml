@@ -86,6 +86,7 @@
             <column name="email_verified" type="boolean"/>
             <column name="image_url" type="VARCHAR(255)"/>
             <column name="password" type="VARCHAR(255)"/>
+            <column name="provider" type="VARCHAR"/>
             <column name="aud_when_create" type="TIMESTAMP"/>
             <column name="aud_when_update" type="TIMESTAMP"/>
         </createTable>
