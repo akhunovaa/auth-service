@@ -22,7 +22,7 @@ spring:
           google:
             clientId: 397702531541-egd5n96t43832vc7u6e2cj38sr235lfh.apps.googleusercontent.com
             clientSecret: ftWpPb99u70RvPzalibdlFNs
-            redirectUriTemplate: "https://botmasterzzz.com/auth/oauth2/callback/{registrationId}"
+            redirectUriTemplate: "{baseUrl}/oauth2/callback/{registrationId}"
             scope:
               - email
               - profile
@@ -55,10 +55,8 @@ app:
     # redirectUri mentioned by the client in the /oauth2/authorize request.
     # We're not using cookies because they won't work well in mobile clients.
     authorizedRedirectUris:
-      - https://botmasterzzz.com/auth/oauth2/redirect
+      - https://botmasterzzz.com/oauth2/redirect
       - myandroidapp://oauth2/redirect
       - myiosapp://oauth2/redirect
 server:
   port: 8060
-  servlet:
-    context-path: "/auth"
