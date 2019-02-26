@@ -22,7 +22,7 @@ spring:
           google:
             clientId: 397702531541-egd5n96t43832vc7u6e2cj38sr235lfh.apps.googleusercontent.com
             clientSecret: ftWpPb99u70RvPzalibdlFNs
-            redirectUriTemplate: "{baseUrl}/oauth2/callback/{registrationId}"
+            redirectUriTemplate: "{baseUrl}/auth/oauth2/callback/{registrationId}"
             scope:
               - email
               - profile
