@@ -126,7 +126,6 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/",
                         "/error",
-                        "/auth/error",
                         "/favicon.ico",
                         "/**/*.png",
                         "/**/*.gif",
