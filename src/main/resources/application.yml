@@ -29,7 +29,7 @@ spring:
           facebook:
             clientId: 767232240328644
             clientSecret: 52e9f2bf362531515a5aa4888a44089d
-            redirectUriTemplate: "{baseUrl}/oauth2/callback/{registrationId}"
+            redirectUriTemplate: "https://botmasterzzz.com/auth/oauth2/callback/{registrationId}"
             scope:
               - email
               - public_profile
