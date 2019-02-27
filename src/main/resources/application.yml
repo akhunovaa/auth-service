@@ -59,4 +59,5 @@ app:
       - myandroidapp://oauth2/redirect
       - myiosapp://oauth2/redirect
 server:
-  port: 8060
+  servlet:
+    context-path: "/auth"

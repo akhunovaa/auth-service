@@ -39,7 +39,7 @@ public class AuthController {
     @Autowired
     private TokenProvider tokenProvider;
 
-    @PostMapping("/auth/login")
+    @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
@@ -55,7 +55,7 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(token));
     }
 
-    @PostMapping("/auth/signup")
+    @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         if(userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("Email address already in use.");
@@ -73,7 +73,7 @@ public class AuthController {
         User result = userRepository.save(user);
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/auth/user/me")
+                .fromCurrentContextPath().path("/user/me")
                 .buildAndExpand(result.getId()).toUri();
 
         return ResponseEntity.created(location)
