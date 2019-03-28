@@ -3,10 +3,7 @@ package com.botmasterzzz.auth.controller;
 import com.botmasterzzz.auth.exception.BadRequestException;
 import com.botmasterzzz.auth.model.AuthProvider;
 import com.botmasterzzz.auth.model.User;
-import com.botmasterzzz.auth.payload.ApiResponse;
-import com.botmasterzzz.auth.payload.AuthResponse;
-import com.botmasterzzz.auth.payload.LoginRequest;
-import com.botmasterzzz.auth.payload.SignUpRequest;
+import com.botmasterzzz.auth.payload.*;
 import com.botmasterzzz.auth.repository.UserRepository;
 import com.botmasterzzz.auth.security.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Date;
 
 @RestController
 public class AuthController {
@@ -79,13 +77,22 @@ public class AuthController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/check")
-    public ApiResponse tokenCheck(@Valid @RequestParam String token) {
+    public TokenChecker tokenCheck(@Valid @RequestParam String token) {
+        TokenChecker tokenChecker = new TokenChecker();
+        Long id = tokenProvider.getUserIdFromToken(token);
         boolean validation = tokenProvider.validateToken(token);
+        Date exp = tokenProvider.getExpFromToken(token);
+        tokenChecker.setId(id);
+        tokenChecker.setValidation(validation);
         if (validation){
-            return new ApiResponse(validation, "good");
+            tokenChecker.setStatus("ok");
+            tokenChecker.setExp(exp);
+            tokenChecker.setMessage("good");
         }else{
-            return new ApiResponse(validation, "bad");
+            tokenChecker.setStatus("false");
+            tokenChecker.setMessage("Some error there");
         }
+        return tokenChecker;
     }
 
 }

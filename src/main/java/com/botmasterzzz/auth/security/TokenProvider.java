@@ -43,6 +43,14 @@ public class TokenProvider {
         return Long.parseLong(claims.getSubject());
     }
 
+    public Date getExpFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(appProperties.getAuth().getTokenSecret())
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getExpiration();
+    }
+
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(appProperties.getAuth().getTokenSecret()).parseClaimsJws(authToken);
