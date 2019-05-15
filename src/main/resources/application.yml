@@ -62,3 +62,9 @@ server:
   port: 8060
   servlet:
     context-path: "/auth"
+
+google:
+  recaptcha:
+    key:
+      site: 6LeulZwUAAAAAA07OHdhKen90gZauyUDCBe8GDEn
+      secret: 6LeulZwUAAAAAAi9E5YeRWyHUNYUEVBW9SaIfzz1

@@ -30,6 +30,9 @@ public class SignUpRequest {
     @Size(min = 3, max = 255)
     private String password;
 
+    @NotBlank
+    private String captchaToken;
+
     public String getName() {
         return name;
     }
@@ -84,5 +87,13 @@ public class SignUpRequest {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getCaptchaToken() {
+        return captchaToken;
+    }
+
+    public void setCaptchaToken(String captchaToken) {
+        this.captchaToken = captchaToken;
     }
 }

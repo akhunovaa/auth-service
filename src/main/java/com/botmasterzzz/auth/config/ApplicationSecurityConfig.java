@@ -25,6 +25,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 import javax.sql.DataSource;
 
@@ -156,10 +158,12 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(oAuth2AuthenticationFailureHandler)
                 .and()
                 .requestCache().requestCache(getHttpSessionRequestCache());
+        ;
 
         // Add our custom Token based authentication filter
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
+
 
     private HttpSessionRequestCache getHttpSessionRequestCache() {
         HttpSessionRequestCache httpSessionRequestCache = new HttpSessionRequestCache();
@@ -167,4 +171,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         return httpSessionRequestCache;
     }
 
+    @Bean
+    public RestOperations restTemplate() {
+        return new RestTemplate();
+    }
 }

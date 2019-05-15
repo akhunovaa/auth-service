@@ -6,6 +6,7 @@ import com.botmasterzzz.auth.model.User;
 import com.botmasterzzz.auth.payload.*;
 import com.botmasterzzz.auth.repository.UserRepository;
 import com.botmasterzzz.auth.security.TokenProvider;
+import com.botmasterzzz.auth.service.CaptchaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Date;
@@ -35,6 +37,9 @@ public class AuthController {
     @Autowired
     private TokenProvider tokenProvider;
 
+    @Autowired
+    private CaptchaService captchaService;
+
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -49,7 +54,14 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, HttpServletRequest request) {
+        String ipAddress = request.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = request.getRemoteAddr();
+        }
+        String response = signUpRequest.getCaptchaToken();
+        captchaService.processResponse(response, ipAddress);
+
         if(userRepository.existsByLogin(signUpRequest.getLogin())) {
             throw new BadRequestException("Данный логин уже занят");
         }
