@@ -3,6 +3,7 @@ package com.botmasterzzz.auth.controller;
 import com.botmasterzzz.auth.exception.BadRequestException;
 import com.botmasterzzz.auth.model.AuthProvider;
 import com.botmasterzzz.auth.model.User;
+import com.botmasterzzz.auth.model.UserRole;
 import com.botmasterzzz.auth.payload.*;
 import com.botmasterzzz.auth.repository.UserRepository;
 import com.botmasterzzz.auth.security.TokenProvider;
@@ -68,6 +69,8 @@ public class AuthController {
 
         // Creating user's account
         User user = new User();
+        UserRole userRole = new UserRole();
+        userRole.setId(4L);
         user.setLogin(signUpRequest.getLogin());
         user.setPassword(signUpRequest.getPassword());
         user.setName(signUpRequest.getName());

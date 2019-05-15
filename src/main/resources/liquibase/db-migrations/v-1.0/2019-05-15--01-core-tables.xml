@@ -4,7 +4,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="1_user_role" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+    <changeSet id="2_user_role" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
         <createTable tableName="user_role" schemaName="public">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -17,7 +17,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="2_users" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+    <changeSet id="3_users" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
         <createTable tableName="users" schemaName="public">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -37,7 +37,7 @@
             <column name="image_url" type="VARCHAR(255)"/>
             <column name="provider" type="VARCHAR"/>
             <column name="provider_id" type="VARCHAR(255)"/>
-            <column name="role_id" type="INTEGER" defaultValueNumeric="4">
+            <column name="role_id" type="BIGINT" defaultValueNumeric="4">
                 <constraints foreignKeyName="fk_user_key" referencedTableName="user_role"
                              referencedColumnNames="id"/>
             </column>

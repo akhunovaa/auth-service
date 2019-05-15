@@ -4,7 +4,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="6_user_role_data" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+    <changeSet id="7_user_role_data" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
         <sql>
             DELETE FROM user_role WHERE note = 'liquibase_changeset_user_role_data';
             INSERT INTO user_role(id, role_name, note, username) values(nextval('user_role_id_seq'), 'ROLE_ADMIN', 'liquibase_changeset_user_role_data', 'admin');

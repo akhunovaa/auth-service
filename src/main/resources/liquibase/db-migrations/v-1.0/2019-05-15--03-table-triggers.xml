@@ -4,7 +4,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="1_4_user_role" failOnError="true" author="azat.akhunov@protonmail.com" runOnChange="true">
+    <changeSet id="1_5_user_role" failOnError="true" author="azat.akhunov@protonmail.com" runOnChange="true">
         <sql>
             DROP TRIGGER IF EXISTS user_role_aud_trigger ON user_role;
             CREATE TRIGGER user_role_aud_trigger BEFORE INSERT OR UPDATE ON user_role FOR EACH ROW EXECUTE PROCEDURE
@@ -15,7 +15,7 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="1_2_users" failOnError="true" author="azat.akhunov@protonmail.com" runOnChange="true">
+    <changeSet id="1_3_users" failOnError="true" author="azat.akhunov@protonmail.com" runOnChange="true">
         <sql>
             DROP TRIGGER IF EXISTS users_aud_trigger ON users;
             CREATE TRIGGER users_aud_trigger BEFORE INSERT OR UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE

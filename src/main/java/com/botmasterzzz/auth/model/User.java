@@ -48,7 +48,7 @@ public class User {
 
     @JsonIgnore
     @JoinColumn(name = "role_id")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     private UserRole userRole;
 
     @JsonIgnore
