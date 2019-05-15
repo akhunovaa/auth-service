@@ -2,16 +2,32 @@ package com.botmasterzzz.auth.payload;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 public class SignUpRequest {
-    @NotBlank
+
+    @Size(max = 50)
     private String name;
 
-    @NotBlank
+    @Size(max = 50)
+    private String surname;
+
+    @Size(max = 50)
+    private String patrName;
+
+    @Size(max = 50)
     @Email
     private String email;
 
+    @Size(max = 50)
+    private String phone;
+
     @NotBlank
+    @Size(min = 3, max = 50)
+    private String login;
+
+    @NotBlank
+    @Size(min = 3, max = 255)
     private String password;
 
     public String getName() {
@@ -22,12 +38,12 @@ public class SignUpRequest {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public String getLogin() {
+        return login;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getPassword() {
@@ -36,5 +52,37 @@ public class SignUpRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getPatrName() {
+        return patrName;
+    }
+
+    public void setPatrName(String patrName) {
+        this.patrName = patrName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

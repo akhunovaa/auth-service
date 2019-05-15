@@ -5,6 +5,7 @@ import java.util.Date;
 public class TokenChecker {
 
     private Long id;
+    private String role;
     private String status;
     private String message;
     private boolean validation;
@@ -48,5 +49,13 @@ public class TokenChecker {
 
     public void setExp(Date exp) {
         this.exp = exp;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

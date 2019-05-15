@@ -14,13 +14,15 @@ import java.util.Map;
 
 public class UserPrincipal implements OAuth2User, UserDetails {
     private Long id;
+    private String login;
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Long id, String login, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
+        this.login = login;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
@@ -28,10 +30,11 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     public static UserPrincipal create(User user) {
         List<GrantedAuthority> authorities = Collections.
-                singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+                singletonList(new SimpleGrantedAuthority(user.getUserRole().getRoleName()));
 
         return new UserPrincipal(
                 user.getId(),
+                user.getLogin(),
                 user.getEmail(),
                 user.getPassword(),
                 authorities
@@ -98,5 +101,9 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     public String getName() {
         return String.valueOf(id);
+    }
+
+    public String getLogin() {
+        return login;
     }
 }
