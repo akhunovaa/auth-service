@@ -17,7 +17,6 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/user/me")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN', 'ROLE_EXTERNAL_ADMIN', 'ROLE_EXTERNAL_MANAGER')")
     public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
         return userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
