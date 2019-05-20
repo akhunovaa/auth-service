@@ -2,6 +2,7 @@ package com.botmasterzzz.auth.security;
 
 import com.botmasterzzz.auth.config.AppProperties;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -25,10 +26,16 @@ public class TokenProvider {
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + appProperties.getAuth().getTokenExpirationMsec());
-
+        String stringId = String.valueOf(userPrincipal.getId());
+        String login = userPrincipal.getLogin();
+        String email = userPrincipal.getEmail();
         return Jwts.builder()
-                .setSubject(Long.toString(userPrincipal.getId()))
+                .setId(stringId)
+                .claim("login", login)
+                .claim("email", email)
+                .claim("authorities", userPrincipal.getAuthorities())
                 .setIssuedAt(new Date())
+                .setIssuer("https://botmasterzzz.com")
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
                 .compact();
