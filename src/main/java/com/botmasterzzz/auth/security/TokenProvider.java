@@ -47,7 +47,7 @@ public class TokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        return Long.parseLong(claims.getSubject());
+        return Long.valueOf(claims.getId());
     }
 
     public Date getExpFromToken(String token) {
