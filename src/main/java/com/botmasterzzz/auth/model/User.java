@@ -36,6 +36,9 @@ public class User {
     @Column(name = "phone")
     private String phone;
 
+    @Column(name = "note")
+    private String note;
+
     @Email
     @Column(name = "email")
     private String email;
@@ -174,5 +177,13 @@ public class User {
 
     public void setAudWhenUpdate(Timestamp audWhenUpdate) {
         this.audWhenUpdate = audWhenUpdate;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }
