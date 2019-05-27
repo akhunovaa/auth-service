@@ -21,10 +21,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String login)
             throws UsernameNotFoundException {
-        User user = userRepository.findByLogin(login)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with login : " + login)
-                );
+
+        User user;
+        if (userRepository.findByEmail(login).isPresent()){
+            user = userRepository.findByEmail(login).get();
+        }else {
+           user  = userRepository.findByLogin(login).orElseThrow(() ->
+                    new UsernameNotFoundException("User not found with login : " + login));
+        }
 
         return UserPrincipal.create(user);
     }
