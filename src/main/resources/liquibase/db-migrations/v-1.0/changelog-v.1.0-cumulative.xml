@@ -11,5 +11,7 @@
     <include file="2019-05-15--03-table-triggers.xml" relativeToChangelogFile="true"/>
     <include file="2019-05-15--04-core-data.xml" relativeToChangelogFile="true"/>
     <include file="2019-05-22--05-alter-tables.xml" relativeToChangelogFile="true"/>
+    <include file="2019-06-05--06-tables.xml" relativeToChangelogFile="true"/>
+    <include file="2019-06-05--07-table-triggers.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
