@@ -1,6 +1,7 @@
 package com.botmasterzzz.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -49,7 +50,7 @@ public class User {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @JsonIgnore
+    @JsonProperty("role")
     @JoinColumn(name = "role_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     private UserRole userRole;

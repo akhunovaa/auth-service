@@ -1,5 +1,8 @@
 package com.botmasterzzz.auth.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -9,20 +12,26 @@ public class UserRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
+    @JsonProperty("role_name")
     @Column(name = "role_name")
     private String roleName;
 
+    @JsonIgnore
     @Column(name = "username")
     private String username;
 
+    @JsonIgnore
     @Column(name = "note")
     private String note;
 
+    @JsonIgnore
     @Column(name = "aud_when_create")
     private Timestamp audWhenCreate;
 
+    @JsonIgnore
     @Column(name = "aud_when_update")
     private Timestamp audWhenUpdate;
 
