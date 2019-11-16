@@ -34,6 +34,9 @@ public class GoogleResponse {
             return false;
         }
         for(ErrorCode error : errors) {
+            if(error == null) {
+                return false;
+            }
             switch(error) {
                 case InvalidResponse:
                 case MissingResponse:
