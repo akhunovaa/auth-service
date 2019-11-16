@@ -1,7 +1,5 @@
 package com.botmasterzzz.auth.payload;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 public class SignUpRequest {
