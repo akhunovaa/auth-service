@@ -3,10 +3,7 @@ package com.botmasterzzz.auth.repository.impl;
 import com.botmasterzzz.auth.model.User;
 import com.botmasterzzz.auth.model.UserAuthEntity;
 import com.botmasterzzz.auth.repository.UserDao;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.hibernate.*;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -85,7 +82,15 @@ public class UserDaoImpl implements UserDao {
         Criteria criteria = session.createCriteria(User.class);
         criteria.add(Restrictions.eq("login", login));
         criteria.setProjection(Projections.id());
-        boolean exists = criteria.uniqueResult() != null;
+        boolean exists;
+        try{
+            exists = criteria.uniqueResult() != null;
+        }catch (NonUniqueResultException e){
+            session.close();
+            return true;
+        }finally {
+            session.close();
+        }
         session.close();
         return exists;
     }
@@ -97,7 +102,15 @@ public class UserDaoImpl implements UserDao {
         Criteria criteria = session.createCriteria(User.class);
         criteria.add(Restrictions.eq("email", email));
         criteria.setProjection(Projections.id());
-        boolean exists = criteria.uniqueResult() != null;
+        boolean exists;
+        try{
+          exists = criteria.uniqueResult() != null;
+        }catch (NonUniqueResultException e){
+            session.close();
+            return true;
+        }finally {
+            session.close();
+        }
         session.close();
         return exists;
     }
