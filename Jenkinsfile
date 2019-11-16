@@ -12,7 +12,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Clean Build'
-                sh 'mvn clean compile package'
+                sh 'mvn clean compile -P dev'
             }
         }
 
@@ -27,7 +27,7 @@ pipeline {
         stage('Package') {
             steps {
                 echo 'Packaging'
-                sh 'mvn clean package -DskipTests'
+                sh 'mvn clean package -P dev'
             }
         }
 

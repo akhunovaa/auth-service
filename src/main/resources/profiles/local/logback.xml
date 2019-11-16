@@ -31,9 +31,10 @@
         </encoder>
     </appender>
 
-    <root level="${log.level}">
+    <root level="debug">
         <appender-ref ref="mainFile"/>
         <appender-ref ref="json"/>
         <appender-ref ref="STDOUT"/>
     </root>
+
 </configuration>

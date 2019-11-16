@@ -5,20 +5,22 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class UserPrincipal implements OAuth2User, UserDetails {
+public class UserPrincipal implements UserDetails {
+
     private Long id;
     private String login;
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
+    private boolean expired;
+    private String issuer;
 
     public UserPrincipal(Long id, String login, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
@@ -26,6 +28,9 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         this.email = email;
         this.password = password;
         this.authorities = authorities;
+    }
+
+    public UserPrincipal() {
     }
 
     public static UserPrincipal create(User user) {
@@ -90,11 +95,6 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         return authorities;
     }
 
-    @Override
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
-
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
@@ -106,4 +106,45 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     public String getLogin() {
         return login;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        this.authorities = authorities;
+    }
+
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public void setExpired(boolean expired) {
+        this.expired = expired;
+    }
+
+    public String getIssuer() {
+        return issuer;
+    }
+
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
+    }
+
 }

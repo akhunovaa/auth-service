@@ -1,8 +1,8 @@
-package com.botmasterzzz.auth.security;
+package com.botmasterzzz.auth.service;
 
-import com.botmasterzzz.auth.exception.ResourceNotFoundException;
 import com.botmasterzzz.auth.model.User;
-import com.botmasterzzz.auth.repository.UserRepository;
+import com.botmasterzzz.auth.repository.UserDao;
+import com.botmasterzzz.auth.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,35 +10,35 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserDao userDao;
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String login)
-            throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
 
         User user;
-        if (userRepository.findByEmail(login).isPresent()){
-            user = userRepository.findByEmail(login).get();
+        if (userDao.existsByLogin(login)) {
+            user = userDao.findByLogin(login).get();
+        } else if(userDao.existsByEmail(login)){
+            user = userDao.findByEmail(login).get();
         }else {
-           user  = userRepository.findByLogin(login).orElseThrow(() ->
-                    new UsernameNotFoundException("User not found with login : " + login));
+            throw new UsernameNotFoundException("User not found with login : " + login);
         }
-
         return UserPrincipal.create(user);
     }
 
     @Transactional
     public UserDetails loadUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("User", "id", id)
+        User user = userDao.findById(id).orElseThrow(
+                () -> new UsernameNotFoundException("User not found with id : " + id)
         );
 
         return UserPrincipal.create(user);
     }
+
+
 }

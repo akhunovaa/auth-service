@@ -14,7 +14,7 @@
             <!-- rollover daily -->
             <fileNamePattern>logs/botmasterzzz-auth/backend.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxHistory>7</maxHistory>
-            <timeBasedFileNamingAndTriggeringPolicy    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+            <timeBasedFileNamingAndTriggeringPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 500MB -->
                 <maxFileSize>500MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
@@ -31,7 +31,7 @@
         </encoder>
     </appender>
 
-    <root level="${log.level}">
+    <root level="debug">
         <appender-ref ref="mainFile"/>
         <appender-ref ref="json"/>
         <appender-ref ref="STDOUT"/>
