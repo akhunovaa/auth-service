@@ -1,8 +1,8 @@
 package com.botmasterzzz.auth.controller;
 
+import com.botmasterzzz.auth.exception.InvalidLoginException;
 import com.botmasterzzz.auth.model.UserAuthEntity;
 import com.botmasterzzz.auth.provider.JwtTokenProvider;
-import com.botmasterzzz.auth.exception.BadRequestException;
 import com.botmasterzzz.auth.model.AuthProvider;
 import com.botmasterzzz.auth.model.User;
 import com.botmasterzzz.auth.model.UserRole;
@@ -70,7 +70,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, HttpServletRequest request) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, HttpServletRequest request){
         String ipAddress = request.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
             ipAddress = request.getRemoteAddr();
@@ -79,11 +79,11 @@ public class AuthController {
         captchaService.processResponse(response, ipAddress);
 
         if(userDao.existsByLogin(signUpRequest.getLogin())) {
-            throw new BadRequestException("Данный логин уже занят");
+            throw new InvalidLoginException("Данный логин зарегистрирован в системе");
         }
 
         if(userDao.existsByEmail(signUpRequest.getEmail())) {
-            throw new BadRequestException("Данный email уже занят");
+            throw new InvalidLoginException("Данный email зарегистрирован в системе");
         }
 
         User user = new User();

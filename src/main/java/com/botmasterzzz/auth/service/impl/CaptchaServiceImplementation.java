@@ -32,7 +32,7 @@ public class CaptchaServiceImplementation implements CaptchaService {
     @Override
     public void processResponse(String response, String clientIp) {
         if(!responseSanityCheck(response)) {
-            throw new InvalidReCaptchaException("Response contains invalid characters");
+            throw new InvalidReCaptchaException("Ошибка в проверки возвращаемой строки в капча");
         }
 
         URI verifyUri = URI.create(String.format(
@@ -45,7 +45,7 @@ public class CaptchaServiceImplementation implements CaptchaService {
             if(googleResponse.hasClientError()) {
                 reCaptchaAttemptService.reCaptchaFailed(clientIp);
             }
-            throw new InvalidReCaptchaException("reCaptcha was not successfully validated");
+            throw new InvalidReCaptchaException("Неудачная проверка строки в капча");
         }
         reCaptchaAttemptService.reCaptchaSucceeded(clientIp);
     }
