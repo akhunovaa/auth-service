@@ -15,22 +15,19 @@ public class SignUpRequest {
     @Size(max = 50)
     private String patrName;
 
-    @Size(max = 50)
-    @Email
+    @Size(min = 3, max = 50)
     private String email;
 
     @Size(max = 50)
     private String phone;
 
-    @NotBlank
     @Size(min = 3, max = 50)
     private String login;
 
-    @NotBlank
     @Size(min = 3, max = 255)
     private String password;
 
-    @NotBlank
+    @Size(min = 3, max = 300)
     private String captchaToken;
 
     public String getName() {
