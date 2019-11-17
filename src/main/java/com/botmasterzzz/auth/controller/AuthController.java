@@ -15,6 +15,7 @@ import com.botmasterzzz.auth.util.ClientInfoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,7 +50,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
+        Authentication authentication;
+        try{
+            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
+        }catch (BadCredentialsException badCredentialsException){
+            throw new InvalidLoginException("Введен неверный логин или пароль!");
+        }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = tokenProvider.createToken(authentication);
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
@@ -78,11 +84,11 @@ public class AuthController {
         String response = signUpRequest.getCaptchaToken();
         captchaService.processResponse(response, ipAddress);
 
-        if(userDao.existsByLogin(signUpRequest.getLogin())) {
+        if(userDao.findByLogin(signUpRequest.getLogin()).isPresent()) {
             throw new InvalidLoginException("Данный логин зарегистрирован в системе");
         }
 
-        if(userDao.existsByEmail(signUpRequest.getEmail())) {
+        if(userDao.findByEmail(signUpRequest.getEmail()).isPresent()) {
             throw new InvalidLoginException("Данный email зарегистрирован в системе");
         }
 

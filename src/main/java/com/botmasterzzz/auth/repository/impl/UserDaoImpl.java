@@ -47,9 +47,10 @@ public class UserDaoImpl implements UserDao {
         Criteria criteria = session.createCriteria(User.class);
         criteria.add(Restrictions.eq("login", login));
         criteria.addOrder(Order.asc("audWhenCreate"));
-        user = (User) criteria.list().get(0);
+        criteria.setMaxResults(1);
+        user = (User) criteria.uniqueResult();
         session.close();
-        return Optional.of(user);
+        return Optional.ofNullable(user);
     }
 
     @Override
@@ -60,9 +61,10 @@ public class UserDaoImpl implements UserDao {
         Criteria criteria = session.createCriteria(User.class);
         criteria.add(Restrictions.eq("email", email));
         criteria.addOrder(Order.asc("audWhenCreate"));
-        user = (User) criteria.list().get(0);
+        criteria.setMaxResults(1);
+        user = (User) criteria.uniqueResult();
         session.close();
-        return Optional.of(user);
+        return Optional.ofNullable(user);
     }
 
     @Override
@@ -72,7 +74,7 @@ public class UserDaoImpl implements UserDao {
         User user = session.get(User.class, id);
         updateTransaction.commit();
         session.close();
-        return Optional.of(user);
+        return Optional.ofNullable(user);
     }
 
     @Override
@@ -91,7 +93,6 @@ public class UserDaoImpl implements UserDao {
         }finally {
             session.close();
         }
-        session.close();
         return exists;
     }
 
@@ -111,7 +112,6 @@ public class UserDaoImpl implements UserDao {
         }finally {
             session.close();
         }
-        session.close();
         return exists;
     }
 }

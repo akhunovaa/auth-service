@@ -19,23 +19,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-
-        User user;
-        if (userDao.existsByLogin(login)) {
-            user = userDao.findByLogin(login).get();
-        } else if(userDao.existsByEmail(login)){
-            user = userDao.findByEmail(login).get();
-        }else {
-            throw new UsernameNotFoundException("User not found with login : " + login);
-        }
+        User user = userDao.findByLogin(login)
+                .orElseGet(() -> userDao.findByEmail(login)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found with login : " + login)));
         return UserPrincipal.create(user);
     }
 
     @Transactional
     public UserDetails loadUserById(Long id) {
-        User user = userDao.findById(id).orElseThrow(
-                () -> new UsernameNotFoundException("User not found with id : " + id)
-        );
+        User user = userDao.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id : " + id));
 
         return UserPrincipal.create(user);
     }

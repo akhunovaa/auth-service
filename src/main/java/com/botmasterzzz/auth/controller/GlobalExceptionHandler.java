@@ -21,7 +21,7 @@ public class GlobalExceptionHandler extends AbstractController {
     @ResponseBody
     public void handler(HttpServletRequest request, HttpServletResponse response, Exception ex) {
         LOGGER.error("REST Error", ex);
-        String err = String.format("{\"success\":false,\"message\":\"%s\",\"timestamp\":%s,\"response\":null}", ex.getLocalizedMessage(), new Date().getTime());
+        String err = String.format("{\"success\":false,\"message\":\"%s\",\"timestamp\":%s}", ex.getLocalizedMessage(), new Date().getTime());
 
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         try {
