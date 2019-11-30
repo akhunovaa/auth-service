@@ -9,4 +9,6 @@ public interface UserService {
     void send(UserDTO userDTO);
 
     void consume(UserDTO userDTO);
+
+    void imageUrlUpdate(UserDTO userDTO);
 }

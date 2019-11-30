@@ -1,6 +1,9 @@
 package com.botmasterzzz.auth.service.impl;
 
 import com.botmasterzzz.auth.dto.UserDTO;
+import com.botmasterzzz.auth.model.User;
+import com.botmasterzzz.auth.model.UserAuthEntity;
+import com.botmasterzzz.auth.repository.UserDao;
 import com.botmasterzzz.auth.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.CountDownLatch;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,6 +27,12 @@ public class UserServiceImpl implements UserService {
     @Value(value = "${user.topic.name}")
     private String userTopicName;
 
+    @Autowired
+    private UserDao userDao;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public UserDTO save(UserDTO userDTO) {
         return null;
@@ -35,9 +44,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @KafkaListener(topics = "${user.topic.name}", groupId = "${user.group.id}", containerFactory = "singleFactory")
     public void consume(UserDTO userDTO) {
         LOGGER.info("=> consumed {}", writeValueAsString(userDTO));
+    }
+
+    @Override
+    @KafkaListener(topics = "${user.topic.name}", groupId = "${user.group.id}", containerFactory = "singleFactory")
+    public void imageUrlUpdate(UserDTO userDTO) {
+        String imageUrl = userDTO.getImageUrl();
+        User user = userDao.findByLogin(userDTO.getLogin())
+                .orElseGet(() -> userDao.findById(userDTO.getId())
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found with login : " + userDTO.getLogin() + " or email: " + userDTO.getId())));
+        user.setImageUrl(imageUrl);
+        LOGGER.info("=> consumed {}", writeValueAsString(userDTO));
+        userDao.userUpdate(user);
+        LOGGER.info("User image was updated {}", imageUrl);
     }
 
     private String writeValueAsString(UserDTO userDTO) {

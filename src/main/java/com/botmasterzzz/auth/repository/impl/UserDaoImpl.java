@@ -38,6 +38,15 @@ public class UserDaoImpl implements UserDao {
         return id;
     }
 
+    @Override
+    public void userUpdate(User user) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.update(user);
+        session.getTransaction().commit();
+        session.close();
+    }
+
     @SuppressWarnings({"deprecation"})
     public Optional<User> findByLogin(String login) {
         User user;

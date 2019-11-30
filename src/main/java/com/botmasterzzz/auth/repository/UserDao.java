@@ -11,6 +11,8 @@ public interface UserDao {
 
         Long userAuthEntityAdd(UserAuthEntity userAuthEntity);
 
+        void userUpdate(User user);
+
         Optional<User> findByLogin(String login);
 
         Optional<User> findByEmail(String email);

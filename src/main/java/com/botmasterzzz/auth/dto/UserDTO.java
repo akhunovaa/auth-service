@@ -1,12 +1,51 @@
 package com.botmasterzzz.auth.dto;
 
-import java.util.Objects;
-
 public class UserDTO extends AbstractDto{
 
+    private String name;
+    private String surname;
+    private String patrName;
+    private String phone;
     private String login;
     private String email;
     private String password;
+    private String imageUrl;
+    private String note;
+    private String provider;
+    private Long roleId;
+    private Boolean emailVerified;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getPatrName() {
+        return patrName;
+    }
+
+    public void setPatrName(String patrName) {
+        this.patrName = patrName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
     public String getLogin() {
         return login;
@@ -32,27 +71,61 @@ public class UserDTO extends AbstractDto{
         this.password = password;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserDTO userDTO = (UserDTO) o;
-        return Objects.equals(login, userDTO.login) &&
-                Objects.equals(email, userDTO.email) &&
-                Objects.equals(password, userDTO.password);
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(login, email, password);
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 
     @Override
     public String toString() {
         return "UserDTO{" +
-                "login='" + login + '\'' +
+                "name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", patrName='" + patrName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", login='" + login + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", note='" + note + '\'' +
+                ", provider='" + provider + '\'' +
+                ", roleId=" + roleId +
+                ", emailVerified=" + emailVerified +
                 '}';
     }
 }
