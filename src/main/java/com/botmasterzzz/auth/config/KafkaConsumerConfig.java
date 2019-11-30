@@ -28,6 +28,8 @@ public class KafkaConsumerConfig {
     private String userGroupId;
     @Value("${user.password.id}")
     private String passwordGroupId;
+    @Value("${user.data.group.id}")
+    private String userDataGroupId;
 
     @Bean
     public Map<String, Object> consumerConfigs() {
@@ -47,6 +49,17 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, passwordGroupId);
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
+        return props;
+    }
+
+    @Bean
+    public Map<String, Object> consumerUserDataConfigs() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, userDataGroupId);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         return props;
     }
@@ -83,6 +96,16 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
+    public KafkaListenerContainerFactory<?> userDataFactory() {
+        ConcurrentKafkaListenerContainerFactory<Long, AbstractDto> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerUserDataFactory());
+        factory.setBatchListener(false);
+        factory.setMessageConverter(new StringJsonMessageConverter());
+        return factory;
+    }
+
+    @Bean
     public ConsumerFactory<Long, AbstractDto> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
@@ -90,6 +113,11 @@ public class KafkaConsumerConfig {
     @Bean
     public ConsumerFactory<Long, AbstractDto> consumerPasswordFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerPasswordConfigs());
+    }
+
+    @Bean
+    public ConsumerFactory<Long, AbstractDto> consumerUserDataFactory() {
+        return new DefaultKafkaConsumerFactory<>(consumerUserDataConfigs());
     }
 
 
