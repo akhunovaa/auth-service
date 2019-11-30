@@ -19,7 +19,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                          final AuthenticationException authenticationException) throws IOException, ServletException {
         final CustomException customException = new CustomException(HttpServletResponse.SC_FORBIDDEN, "Доступ запрещен", "Для просмотра данного ресурса необходима авторизация");
         customException.setPath(request.getServletPath());
-        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         final ObjectMapper mapper = new ObjectMapper();
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         mapper.writeValue(response.getOutputStream(), customException.getBodyExceptionMessage());

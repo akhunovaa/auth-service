@@ -20,7 +20,7 @@ public class UserController {
     private UserDao userDao;
 
     @PreAuthorize("authenticated")
-    @RequestMapping(value = "/user/me", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/user/me", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public User getCurrentUser() {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) usernamePasswordAuthenticationToken.getPrincipal();

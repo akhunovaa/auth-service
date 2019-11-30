@@ -82,7 +82,7 @@ public class AuthController {
             ipAddress = request.getRemoteAddr();
         }
         String response = signUpRequest.getCaptchaToken();
-        captchaService.processResponse(response, ipAddress);
+        //captchaService.processResponse(response, ipAddress);
 
         if(userDao.findByLogin(signUpRequest.getLogin()).isPresent()) {
             throw new InvalidLoginException("Данный логин зарегистрирован в системе");

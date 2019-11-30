@@ -23,7 +23,7 @@ public class GlobalExceptionHandler extends AbstractController {
         LOGGER.error("REST Error", ex);
         String err = String.format("{\"success\":false,\"message\":\"%s\",\"timestamp\":%s}", ex.getLocalizedMessage(), new Date().getTime());
 
-        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         try {
             response.getWriter().print(err);
         } catch (IOException ex1) {
