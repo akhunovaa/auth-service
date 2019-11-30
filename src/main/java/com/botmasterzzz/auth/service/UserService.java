@@ -11,4 +11,6 @@ public interface UserService {
     void consume(UserDTO userDTO);
 
     void imageUrlUpdate(UserDTO userDTO);
+
+    void passwordUpdate(UserDTO userDTO);
 }

@@ -2,7 +2,6 @@ package com.botmasterzzz.auth.service.impl;
 
 import com.botmasterzzz.auth.dto.UserDTO;
 import com.botmasterzzz.auth.model.User;
-import com.botmasterzzz.auth.model.UserAuthEntity;
 import com.botmasterzzz.auth.repository.UserDao;
 import com.botmasterzzz.auth.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @KafkaListener(topics = "${user.topic.name}", groupId = "${user.group.id}", containerFactory = "singleFactory")
+    @KafkaListener(topics = "${user.topic.name}", containerFactory = "singleFactory")
     public void imageUrlUpdate(UserDTO userDTO) {
         String imageUrl = userDTO.getImageUrl();
         User user = userDao.findByLogin(userDTO.getLogin())
@@ -60,6 +59,20 @@ public class UserServiceImpl implements UserService {
         userDao.userUpdate(user);
         LOGGER.info("User image was updated {}", imageUrl);
     }
+
+    @Override
+    @KafkaListener(topics = "${user.password.topic.name}", containerFactory = "passwordFactory")
+    public void passwordUpdate(UserDTO userDTO) {
+        String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+        User user = userDao.findByLogin(userDTO.getLogin())
+                .orElseGet(() -> userDao.findById(userDTO.getId())
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found with login : " + userDTO.getLogin() + " or email: " + userDTO.getId())));
+        user.setPassword(encodedPassword);
+        LOGGER.info("=> consumed {}", writeValueAsString(userDTO));
+        userDao.userUpdate(user);
+        LOGGER.info("User password was updated to login: {}", userDTO.getLogin());
+    }
+
 
     private String writeValueAsString(UserDTO userDTO) {
         try {
