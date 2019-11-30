@@ -1,0 +1,13 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="30-11-2019-1819" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <sql>
+            INSERT INTO user_role(id, role_name, note, username) values(nextval('user_role_id_seq'), 'ROLE_INTEGRATOR', 'liquibase_changeset_user_role_data', 'integrator');
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -13,5 +13,6 @@
     <include file="2019-05-22--05-alter-tables.xml" relativeToChangelogFile="true"/>
     <include file="2019-06-05--06-tables.xml" relativeToChangelogFile="true"/>
     <include file="2019-06-05--07-table-triggers.xml" relativeToChangelogFile="true"/>
+    <include file="2019-11-30--08-roles-data.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
