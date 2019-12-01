@@ -7,11 +7,17 @@ public class AuthResponse {
     private String accessToken;
     private String tokenType = "Bearer";
     private long timestamp;
+    private String message;
 
     public AuthResponse(String accessToken) {
         this.success = true;
         this.accessToken = accessToken;
         this.timestamp = new Date().getTime();
+    }
+
+    public AuthResponse(String accessToken, String message) {
+        this.accessToken = accessToken;
+        this.message = message;
     }
 
     public String getAccessToken() {
@@ -44,5 +50,13 @@ public class AuthResponse {
 
     public void setSuccess(boolean success) {
         this.success = success;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

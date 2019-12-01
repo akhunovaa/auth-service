@@ -21,11 +21,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.net.URI;
 
 @RestController
 public class AuthController {
@@ -77,6 +75,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, HttpServletRequest request){
+        Authentication authentication;
         String ipAddress = request.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
             ipAddress = request.getRemoteAddr();
@@ -106,6 +105,13 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setUserRole(userRole);
         user.setId(userDao.userAdd(user));
+        try{
+            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signUpRequest.getLogin(), signUpRequest.getPassword()));
+        }catch (BadCredentialsException badCredentialsException){
+            throw new InvalidLoginException("Введен неверный логин или пароль!");
+        }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = tokenProvider.createToken(authentication);
         UserAuthEntity userAuthEntity = new UserAuthEntity();
         userAuthEntity.setUser(user);
         userAuthEntity.setClientBrowser(ClientInfoUtil.getClientBrowser(request));
@@ -116,12 +122,7 @@ public class AuthController {
         userAuthEntity.setUserAgent(ClientInfoUtil.getUserAgent(request));
         userAuthEntity.setNote("SIGNUP");
         asyncLoggerService.userAuthEntityAdd(userAuthEntity);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/user/me")
-                .buildAndExpand(user.getId()).toUri();
-
-        return ResponseEntity.created(location).body(new ApiResponse(true, "Пользователь успешно зарегистрирован"));
+        return ResponseEntity.ok(new AuthResponse(token, "Пользователь успешно зарегистрирован"));
     }
 
 }
