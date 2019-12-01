@@ -70,7 +70,7 @@ public class AuthController {
         userAuthEntity.setToken(token);
         userAuthEntity.setNote("LOGIN");
         asyncLoggerService.userAuthEntityAdd(userAuthEntity);
-        return ResponseEntity.ok(new AuthResponse(token));
+        return ResponseEntity.ok(new AuthResponse(token, "Пользователь успешно авторизован"));
     }
 
     @PostMapping("/signup")

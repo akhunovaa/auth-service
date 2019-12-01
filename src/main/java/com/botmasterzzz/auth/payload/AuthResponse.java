@@ -12,6 +12,7 @@ public class AuthResponse {
     public AuthResponse(String accessToken) {
         this.success = true;
         this.accessToken = accessToken;
+        this.message = "Bearer";
         this.timestamp = new Date().getTime();
     }
 
