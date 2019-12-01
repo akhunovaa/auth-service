@@ -16,8 +16,10 @@ public class AuthResponse {
     }
 
     public AuthResponse(String accessToken, String message) {
+        this.success = true;
         this.accessToken = accessToken;
         this.message = message;
+        this.timestamp = new Date().getTime();
     }
 
     public String getAccessToken() {
