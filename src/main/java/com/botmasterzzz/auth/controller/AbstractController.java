@@ -52,7 +52,7 @@ abstract class AbstractController {
 
     protected void returnJsonString(String str, HttpServletResponse httpServletResponse) {
         try {
-            httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            httpServletResponse.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
             httpServletResponse.getWriter().print(str);
         } catch (IOException e) {
             httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
