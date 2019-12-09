@@ -14,7 +14,7 @@ public class SignUpRequest {
     @Size(max = 50)
     private String patrName;
 
-    @Size(min = 6, max = 50, message = "Email должен состоять как минимум из 3 символов")
+    @Size(min = 6, max = 50, message = "Email должен состоять как минимум из 6 символов")
     private String email;
 
     @Size(max = 50)
@@ -24,7 +24,7 @@ public class SignUpRequest {
     @NotNull(message = "Логин не долджен быть пустым")
     private String login;
 
-    @Size(min = 6, max = 255, message = "Пароль должен состоять как минимум из 3 символов")
+    @Size(min = 6, max = 255, message = "Пароль должен состоять как минимум из 6 символов")
     @NotNull(message = "Пароль не долджен быть пустым")
     private String password;
 

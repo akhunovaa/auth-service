@@ -10,7 +10,7 @@ public class LoginRequest {
     private String login;
 
     @NotNull(message = "Пароль не долджен быть пустым")
-    @Size(min = 6, max = 255, message = "Пароль должен состоять как минимум из 3 символов")
+    @Size(min = 6, max = 255, message = "Пароль должен состоять как минимум из 6 символов")
     private String password;
 
     public String getLogin() {
