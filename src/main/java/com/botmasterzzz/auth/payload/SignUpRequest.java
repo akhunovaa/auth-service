@@ -1,5 +1,8 @@
 package com.botmasterzzz.auth.payload;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class SignUpRequest {
@@ -19,13 +22,19 @@ public class SignUpRequest {
     @Size(max = 50)
     private String phone;
 
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 50, message = "Логин должен состоять как минимум из 3 символов")
+    @NotNull(message = "Логин не долджен быть пустым")
+    @NotEmpty(message = "Логин не долджен быть пустым")
+    @NotBlank(message = "Логин не долджен быть пустым")
     private String login;
 
-    @Size(min = 3, max = 255)
+    @Size(min = 3, max = 255, message = "Пароль должен состоять как минимум из 3 символов")
+    @NotNull(message = "Пароль не долджен быть пустым")
+    @NotEmpty(message = "Пароль не долджен быть пустым")
+    @NotBlank(message = "Пароль не долджен быть пустым")
     private String password;
 
-    @Size(min = 3, max = 300)
+    @Size(min = 3, max = 300, message = "Капча должна состоять как минимум из 3 символов")
     private String captchaToken;
 
     public String getName() {
