@@ -1,12 +1,14 @@
 package com.botmasterzzz.auth.controller;
 
 import com.botmasterzzz.auth.exception.InvalidLoginException;
-import com.botmasterzzz.auth.model.UserAuthEntity;
-import com.botmasterzzz.auth.provider.JwtTokenProvider;
 import com.botmasterzzz.auth.model.AuthProvider;
 import com.botmasterzzz.auth.model.User;
+import com.botmasterzzz.auth.model.UserAuthEntity;
 import com.botmasterzzz.auth.model.UserRole;
-import com.botmasterzzz.auth.payload.*;
+import com.botmasterzzz.auth.payload.AuthResponse;
+import com.botmasterzzz.auth.payload.LoginRequest;
+import com.botmasterzzz.auth.payload.SignUpRequest;
+import com.botmasterzzz.auth.provider.JwtTokenProvider;
 import com.botmasterzzz.auth.repository.UserDao;
 import com.botmasterzzz.auth.security.UserPrincipal;
 import com.botmasterzzz.auth.service.AsyncLoggerService;
@@ -20,7 +22,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -49,9 +53,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         Authentication authentication;
-        try{
+        try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
-        }catch (BadCredentialsException badCredentialsException){
+        } catch (BadCredentialsException badCredentialsException) {
             throw new InvalidLoginException("Введен неверный логин или пароль!");
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -74,7 +78,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, HttpServletRequest request){
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, HttpServletRequest request) {
         Authentication authentication;
         String ipAddress = request.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
@@ -83,11 +87,11 @@ public class AuthController {
         String response = signUpRequest.getCaptchaToken();
         //captchaService.processResponse(response, ipAddress);
 
-        if(userDao.findByLogin(signUpRequest.getLogin()).isPresent()) {
+        if (userDao.findByLogin(signUpRequest.getLogin()).isPresent()) {
             throw new InvalidLoginException("Данный логин зарегистрирован в системе");
         }
 
-        if(userDao.findByEmail(signUpRequest.getEmail()).isPresent()) {
+        if (userDao.findByEmail(signUpRequest.getEmail()).isPresent()) {
             throw new InvalidLoginException("Данный email зарегистрирован в системе");
         }
 
@@ -105,9 +109,9 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setUserRole(userRole);
         user.setId(userDao.userAdd(user));
-        try{
+        try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signUpRequest.getLogin(), signUpRequest.getPassword()));
-        }catch (BadCredentialsException badCredentialsException){
+        } catch (BadCredentialsException badCredentialsException) {
             throw new InvalidLoginException("Введен неверный логин или пароль!");
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);

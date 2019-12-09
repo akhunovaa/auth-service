@@ -57,7 +57,7 @@ public class JwtTokenProvider {
         authorities = (List<GrantedAuthority>) claims.get("authorities");
         Date issuedDate = claims.getIssuedAt();
         Date expireDate = claims.getExpiration();
-        if (new Date().after(expireDate)){
+        if (new Date().after(expireDate)) {
             userPrincipal.setExpired(true);
         }
         userPrincipal.setId(id);

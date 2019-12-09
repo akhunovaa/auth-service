@@ -4,7 +4,6 @@ import com.botmasterzzz.auth.model.User;
 import com.botmasterzzz.auth.model.UserAuthEntity;
 import com.botmasterzzz.auth.repository.UserDao;
 import com.botmasterzzz.auth.service.AsyncLoggerService;
-import com.botmasterzzz.auth.util.ClientInfoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

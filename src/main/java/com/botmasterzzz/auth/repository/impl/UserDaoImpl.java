@@ -92,12 +92,12 @@ public class UserDaoImpl implements UserDao {
         criteria.add(Restrictions.eq("login", login));
         criteria.setProjection(Projections.id());
         boolean exists;
-        try{
+        try {
             exists = criteria.uniqueResult() != null;
-        }catch (NonUniqueResultException e){
+        } catch (NonUniqueResultException e) {
             session.close();
             return true;
-        }finally {
+        } finally {
             session.close();
         }
         return exists;
@@ -111,12 +111,12 @@ public class UserDaoImpl implements UserDao {
         criteria.add(Restrictions.eq("email", email));
         criteria.setProjection(Projections.id());
         boolean exists;
-        try{
-          exists = criteria.uniqueResult() != null;
-        }catch (NonUniqueResultException e){
+        try {
+            exists = criteria.uniqueResult() != null;
+        } catch (NonUniqueResultException e) {
             session.close();
             return true;
-        }finally {
+        } finally {
             session.close();
         }
         return exists;

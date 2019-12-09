@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
@@ -40,7 +39,6 @@ public class User {
     @Column(name = "note")
     private String note;
 
-    @Email
     @Column(name = "email")
     private String email;
 

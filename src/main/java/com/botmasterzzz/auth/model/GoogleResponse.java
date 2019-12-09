@@ -30,14 +30,14 @@ public class GoogleResponse {
     @JsonIgnore
     public boolean hasClientError() {
         ErrorCode[] errors = getErrorCodes();
-        if(errors == null) {
+        if (errors == null) {
             return false;
         }
-        for(ErrorCode error : errors) {
-            if(error == null) {
+        for (ErrorCode error : errors) {
+            if (error == null) {
                 return false;
             }
-            switch(error) {
+            switch (error) {
                 case InvalidResponse:
                 case MissingResponse:
                     return true;
@@ -47,14 +47,14 @@ public class GoogleResponse {
     }
 
     static enum ErrorCode {
-        MissingSecret,     InvalidSecret,
-        MissingResponse,   InvalidResponse;
+        MissingSecret, InvalidSecret,
+        MissingResponse, InvalidResponse;
 
         private static Map<String, ErrorCode> errorsMap = new HashMap<String, ErrorCode>(4);
 
         static {
-            errorsMap.put("missing-input-secret",   MissingSecret);
-            errorsMap.put("invalid-input-secret",   InvalidSecret);
+            errorsMap.put("missing-input-secret", MissingSecret);
+            errorsMap.put("invalid-input-secret", InvalidSecret);
             errorsMap.put("missing-input-response", MissingResponse);
             errorsMap.put("invalid-input-response", InvalidResponse);
         }

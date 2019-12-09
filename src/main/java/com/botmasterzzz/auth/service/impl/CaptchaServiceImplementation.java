@@ -31,7 +31,7 @@ public class CaptchaServiceImplementation implements CaptchaService {
 
     @Override
     public void processResponse(String response, String clientIp) {
-        if(!responseSanityCheck(response)) {
+        if (!responseSanityCheck(response)) {
             throw new InvalidReCaptchaException("Ошибка в проверки возвращаемой строки в капча");
         }
 
@@ -41,8 +41,8 @@ public class CaptchaServiceImplementation implements CaptchaService {
 
         GoogleResponse googleResponse = new RestTemplate().getForObject(verifyUri, GoogleResponse.class);
 
-        if(!googleResponse.isSuccess()) {
-            if(googleResponse.hasClientError()) {
+        if (!googleResponse.isSuccess()) {
+            if (googleResponse.hasClientError()) {
                 reCaptchaAttemptService.reCaptchaFailed(clientIp);
             }
             throw new InvalidReCaptchaException("Неудачная проверка строки в капча");

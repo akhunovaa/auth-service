@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserDTO extends AbstractDto{
+public class UserDTO extends AbstractDto {
 
     private String name;
     private String surname;

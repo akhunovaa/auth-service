@@ -54,7 +54,7 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
         } catch (Exception ex) {
             LOGGER.error("Could not set user authentication in security context", ex);
         }
-        if (allowOrigin){
+        if (allowOrigin) {
             HttpServletResponse res = (HttpServletResponse) response;
             res.setHeader("Access-Control-Allow-Origin", "*");
             res.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");

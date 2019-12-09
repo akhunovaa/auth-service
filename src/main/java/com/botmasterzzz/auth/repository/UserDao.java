@@ -7,20 +7,20 @@ import java.util.Optional;
 
 public interface UserDao {
 
-        Long userAdd(User user);
+    Long userAdd(User user);
 
-        Long userAuthEntityAdd(UserAuthEntity userAuthEntity);
+    Long userAuthEntityAdd(UserAuthEntity userAuthEntity);
 
-        void userUpdate(User user);
+    void userUpdate(User user);
 
-        Optional<User> findByLogin(String login);
+    Optional<User> findByLogin(String login);
 
-        Optional<User> findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
-        Optional<User> findById(Long id);
+    Optional<User> findById(Long id);
 
-        Boolean existsByLogin(String login);
+    Boolean existsByLogin(String login);
 
-        Boolean existsByEmail(String email);
+    Boolean existsByEmail(String email);
 
 }
