@@ -28,7 +28,7 @@ public class SignUpRequest {
     @NotNull(message = "Пароль не долджен быть пустым")
     private String password;
 
-    @Size(min = 3, max = 300, message = "Капча должна состоять как минимум из 3 символов")
+    @Size(min = 3, message = "Проверка на робота не пройдена")
     private String captchaToken;
 
     public String getName() {
