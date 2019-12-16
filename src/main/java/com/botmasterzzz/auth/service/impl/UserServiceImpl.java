@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @KafkaListener(topics = "${user.topic.name}", containerFactory = "singleFactory")
+    @KafkaListener(topics = "${user.topic.name}", containerFactory = "singleFactory", properties={"missingTopicsFatal=false"})
     public void imageUrlUpdate(UserDTO userDTO) {
         String imageUrl = userDTO.getImageUrl();
         User user = userDao.findByLogin(userDTO.getLogin())
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @KafkaListener(topics = "${user.password.topic.name}", containerFactory = "passwordFactory")
+    @KafkaListener(topics = "${user.password.topic.name}", containerFactory = "passwordFactory", properties={"missingTopicsFatal=false"})
     public void passwordUpdate(UserDTO userDTO) {
         String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
         User user = userDao.findByLogin(userDTO.getLogin())
