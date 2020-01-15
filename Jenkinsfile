@@ -1,4 +1,5 @@
 pipeline {
+
     environment {
         dockerImageName = "botmasterzzz-auth"
         registryUrl = "https://rusberbank.ru"
@@ -7,6 +8,7 @@ pipeline {
         dockerExternalPort = "127.0.0.1:8060"
         dockerInternalPort = "8060"
     }
+
     agent any
 
     stages {
