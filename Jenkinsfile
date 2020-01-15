@@ -1,8 +1,8 @@
 pipeline {
     environment {
-        dockerImage = "botmasterzzz-auth"
+        dockerImageName = "botmasterzzz-auth"
         registryUrl = "https://rusberbank.ru"
-        registry = "rusberbank.ru/${dockerImage}"
+        registry = "rusberbank.ru/${dockerImageName}"
         registryCredential = "ourHubPwd"
         dockerExternalPort = "127.0.0.1:8060"
         dockerInternalPort = "8060"
@@ -70,14 +70,14 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo '## Deploy locally ##'
-                echo "Stopping docker container: $dockerImage"
-                sh "docker container ls -a -f name=$dockerImage -q | xargs --no-run-if-empty docker container stop"
-                echo "Removing docker container: $dockerImage"
-                sh "docker container ls -a -f name=$dockerImage -q | xargs -r docker container rm"
+                echo "Stopping docker container: $dockerImageName"
+                sh "docker container ls -a -f name=$dockerImageName -q | xargs --no-run-if-empty docker container stop"
+                echo "Removing docker container: $dockerImageName"
+                sh "docker container ls -a -f name=$dockerImageName -q | xargs -r docker container rm"
                 echo "Running docker image: $registry:$BUILD_NUMBER"
                 script {
                     docker.withRegistry(registryUrl, registryCredential) {
-                        sh "docker run -v /etc/localtime:/etc/localtime --name $dockerImage -d --net=botmasterzzznetwork -p $dockerExternalPort:$dockerInternalPort --restart always $registry:$BUILD_NUMBER"
+                        sh "docker run -v /etc/localtime:/etc/localtime --name $dockerImageName -d --net=botmasterzzznetwork -p $dockerExternalPort:$dockerInternalPort --restart always $registry:$BUILD_NUMBER"
                     }
                 }
                 sh 'printenv'
