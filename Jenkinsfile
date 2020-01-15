@@ -1,4 +1,12 @@
 pipeline {
+    environment {
+        dockerImage = "botmasterzzz-auth"
+        registryUrl = "https://rusberbank.ru"
+        registry = "rusberbank.ru/${dockerImage}"
+        registryCredential = "ourHubPwd"
+        dockerExternalPort = "127.0.0.1:8060"
+        dockerInternalPort = "8060"
+    }
     agent any
 
     stages {
@@ -33,37 +41,48 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                echo 'Build Docker Image'
-                sh 'docker build --no-cache -t leon4uk/botmasterzzz-auth:1.0.0 .'
+                echo "Building image: $registry:$BUILD_NUMBER"
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
             }
         }
 
-        stage('Push Docker image') {
+        stage('Push Docker Image') {
             steps {
-                echo 'Push Docker image'
-                withCredentials([string(credentialsId: 'dockerHubPwd', variable: 'dockerHubPwd')]) {
-                    sh "docker login -u leon4uk -p ${dockerHubPwd}"
+                echo "Pushing image: $registry:$BUILD_NUMBER"
+                script {
+                    docker.withRegistry(registryUrl, registryCredential) {
+                        dockerImage.push()
+                    }
+
                 }
-                sh 'docker push leon4uk/botmasterzzz-auth:1.0.0'
-                sh 'docker rmi leon4uk/botmasterzzz-auth:1.0.0'
+            }
+        }
+
+        stage('Remove Unused Docker Image') {
+            steps {
+                echo "Removing image: $registry:$BUILD_NUMBER"
+                sh "docker rmi $registry:$BUILD_NUMBER"
             }
         }
 
         stage('Deploy') {
             steps {
                 echo '## Deploy locally ##'
-                withCredentials([string(credentialsId: 'dockerHubPwd', variable: 'dockerHubPwd')]) {
-                    sh "docker login -u leon4uk -p ${dockerHubPwd}"
+                echo "Stopping docker container: $dockerImage"
+                sh "docker container ls -a -f name=$dockerImage -q | xargs --no-run-if-empty docker container stop"
+                echo "Removing docker container: $dockerImage"
+                sh "docker container ls -a -f name=$dockerImage -q | xargs -r docker container rm"
+                echo "Running docker image: $registry:$BUILD_NUMBER"
+                script {
+                    docker.withRegistry(registryUrl, registryCredential) {
+                        sh "docker run -v /etc/localtime:/etc/localtime --name $dockerImage -d --net=botmasterzzznetwork -p $dockerExternalPort:$dockerInternalPort --restart always $registry:$BUILD_NUMBER"
+                    }
                 }
-                sh "docker container ls -a -f name=botmasterzzz-auth -q | xargs --no-run-if-empty docker container stop"
-                sh 'docker container ls -a -f name=botmasterzzz-auth -q | xargs -r docker container rm'
-                sh 'docker run -v /etc/localtime:/etc/localtime --name botmasterzzz-auth -d --net=botmasterzzznetwork -p 127.0.0.1:8060:8060 --restart always leon4uk/botmasterzzz-auth:1.0.0'
-                //sh 'docker ps -f name=botmasterzzz-auth -q | xargs --no-run-if-empty docker container stop'
-                //sh 'docker container ls -a -f name=botmasterzzz-auth -q | xargs -r docker container rm'
-               // sh "docker images --format '{{.Repository}}:{{.Tag}}' | grep 'botmasterzzz-auth' | xargs --no-run-if-empty docker rmi"
-                //sh 'docker run --name botmasterzzz-auth -d --net=botmasterzzznetwork -p 127.0.0.1:8060:8060 leon4uk/botmasterzzz-auth:1.0.0'
+                sh 'printenv'
             }
-        }
 
+        }
     }
 }
