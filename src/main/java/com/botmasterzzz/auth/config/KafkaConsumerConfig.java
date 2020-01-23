@@ -18,20 +18,20 @@ import org.springframework.kafka.support.converter.StringJsonMessageConverter;
 import java.util.HashMap;
 import java.util.Map;
 
-@EnableKafka
-@Configuration
+//@EnableKafka
+//@Configuration
 public class KafkaConsumerConfig {
 
-    @Value(value = "${kafka.server}")
+    //@Value(value = "${kafka.server}")
     private String kafkaServer;
-    @Value("${user.group.id}")
+    //@Value("${user.group.id}")
     private String userGroupId;
-    @Value("${user.password.id}")
+    //@Value("${user.password.id}")
     private String passwordGroupId;
-    @Value("${user.data.group.id}")
+    //@Value("${user.data.group.id}")
     private String userDataGroupId;
 
-    @Bean
+    //@Bean
     public Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
@@ -42,7 +42,7 @@ public class KafkaConsumerConfig {
         return props;
     }
 
-    @Bean
+    //@Bean
     public Map<String, Object> consumerPasswordConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
@@ -53,7 +53,7 @@ public class KafkaConsumerConfig {
         return props;
     }
 
-    @Bean
+   // @Bean
     public KafkaListenerContainerFactory<?> batchFactory() {
         ConcurrentKafkaListenerContainerFactory<Long, AbstractDto> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
@@ -63,7 +63,7 @@ public class KafkaConsumerConfig {
         return factory;
     }
 
-    @Bean
+    //@Bean
     public KafkaListenerContainerFactory<?> singleFactory() {
         ConcurrentKafkaListenerContainerFactory<Long, AbstractDto> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
@@ -73,7 +73,7 @@ public class KafkaConsumerConfig {
         return factory;
     }
 
-    @Bean
+    //@Bean
     public KafkaListenerContainerFactory<?> passwordFactory() {
         ConcurrentKafkaListenerContainerFactory<Long, AbstractDto> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
@@ -83,17 +83,17 @@ public class KafkaConsumerConfig {
         return factory;
     }
 
-    @Bean
+    //@Bean
     public ConsumerFactory<Long, AbstractDto> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
 
-    @Bean
+    //@Bean
     public ConsumerFactory<Long, AbstractDto> consumerPasswordFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerPasswordConfigs());
     }
 
-    @Bean
+    //@Bean
     public StringJsonMessageConverter converter() {
         return new StringJsonMessageConverter();
     }
