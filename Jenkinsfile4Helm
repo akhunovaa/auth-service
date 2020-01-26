@@ -35,6 +35,19 @@ pipeline {
             }
         }
 
+        stage('SonarQube') {
+            environment {
+                scannerHome = tool 'botmasterzzz-sonar-scanner'
+            }
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+                timeout(time: 20, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
 
         stage('Package') {
             steps {
