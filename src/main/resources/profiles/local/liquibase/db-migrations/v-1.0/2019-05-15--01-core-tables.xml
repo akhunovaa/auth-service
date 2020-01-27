@@ -1,0 +1,49 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="2_user_role" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <createTable tableName="user_role" schemaName="public">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="role_name" type="VARCHAR"/>
+            <column name="username" type="VARCHAR"/>
+            <column name="note" type="VARCHAR"/>
+            <column name="aud_when_create" type="TIMESTAMP"/>
+            <column name="aud_when_update" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3_users" failOnError="false" author="azat.akhunov@protonmail.com" runOnChange="true">
+        <createTable tableName="users" schemaName="public">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="login" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="surname" type="VARCHAR(255)"/>
+            <column name="patr_name" type="VARCHAR(255)"/>
+            <column name="phone" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="email_verified" type="boolean" defaultValueBoolean="false"/>
+            <column name="image_url" type="VARCHAR(255)"/>
+            <column name="provider" type="VARCHAR"/>
+            <column name="provider_id" type="VARCHAR(255)"/>
+            <column name="role_id" type="BIGINT" defaultValueNumeric="4">
+                <constraints foreignKeyName="fk_user_key" referencedTableName="user_role"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="aud_when_create" type="TIMESTAMP"/>
+            <column name="aud_when_update" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

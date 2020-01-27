@@ -14,6 +14,7 @@ public class Server {
         new Server().run();
     }
 
+
     public Server() throws ServletException {
         this(getPort());
     }
@@ -22,12 +23,11 @@ public class Server {
         tomcat = new Tomcat();
         tomcat.setPort(port);
         tomcat.setBaseDir(System.getProperty("java.io.tmpdir"));
-        tomcat.getHost().setAppBase(System.getProperty("java.io.tmpdir"));
         tomcat.addWebapp("/auth", System.getProperty("java.io.tmpdir"));
     }
 
 
-    public void run() throws LifecycleException {
+    public void run() throws Exception {
         tomcat.start();
         tomcat.getServer().await();
     }
