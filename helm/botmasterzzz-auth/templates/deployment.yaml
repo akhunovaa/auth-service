@@ -6,7 +6,7 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: botmasterzzz-auth
+      app: {{ include "fullname" . }}
   template:
     metadata:
       labels:

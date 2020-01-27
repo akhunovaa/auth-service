@@ -11,4 +11,4 @@ spec:
   externalIPs:
     - 10.0.0.6
   selector:
-    app: botmasterzzz-auth
+    app: {{ include "fullname" . }}
