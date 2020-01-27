@@ -134,6 +134,6 @@ def get_port() {
         case 'prom':
             return '8058'
         default:
-            return '7100'
+            return '8060'
     }
 }
