@@ -35,6 +35,8 @@
         <spring-data-jpa.version>2.2.1.RELEASE</spring-data-jpa.version>
         <postgresql.version>42.2.5</postgresql.version>
         <hibernate.version>5.3.3.Final</hibernate.version>
+        <hibernate.validator.version>5.1.0.Final</hibernate.validator.version>
+        <hibernate-validator-annotation-processor.version>4.1.0.Final</hibernate-validator-annotation-processor.version>
         <slf4j-log4j12.version>1.7.25</slf4j-log4j12.version>
         <mockito.version>2.23.4</mockito.version>
         <junit.version>4.12</junit.version>
@@ -342,16 +344,16 @@
             <version>${jackson.version}</version>
         </dependency>
 
-        <!-- Hibernate -->
+        <!-- Hibernate validator-->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.1.0.Final</version>
+            <version>${hibernate.validator.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
-            <version>4.1.0.Final</version>
+            <version>${hibernate-validator-annotation-processor.version}</version>
         </dependency>
 
     </dependencies>
