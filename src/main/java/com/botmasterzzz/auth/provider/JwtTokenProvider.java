@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -98,11 +98,10 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    @SuppressWarnings("deprecation")
     public Collection<GrantedAuthority> setUserAuthorities(List<GrantedAuthority> auths) {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         String authority = (String) ((LinkedHashMap) auths.get(0)).get("authority");
-        grantedAuthorities.add(new GrantedAuthorityImpl(authority));
+        grantedAuthorities.add(new SimpleGrantedAuthority(authority));
         return grantedAuthorities;
     }
 

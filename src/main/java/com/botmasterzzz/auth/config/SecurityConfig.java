@@ -3,6 +3,10 @@ package com.botmasterzzz.auth.config;
 import com.botmasterzzz.auth.filter.TokenAuthenticationFilter;
 import com.botmasterzzz.auth.listener.CustomAccessDeniedHandler;
 import com.botmasterzzz.auth.listener.CustomAuthenticationEntryPoint;
+import com.botmasterzzz.auth.security.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.botmasterzzz.auth.security.OAuth2AuthenticationFailureHandler;
+import com.botmasterzzz.auth.security.OAuth2AuthenticationSuccessHandler;
+import com.botmasterzzz.auth.service.CustomOAuth2UserService;
 import com.botmasterzzz.auth.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +39,7 @@ import org.springframework.web.client.RestTemplate;
 )
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
     @Autowired
@@ -43,6 +48,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationEntryPoint authenticationEntryPoint;
     @Autowired
     private TokenAuthenticationFilter tokenAuthenticationFilter;
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
+    @Autowired
+    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    @Autowired
+    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -71,6 +82,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder());
     }
 
+    /*
+  By default, Spring OAuth2 uses HttpSessionOAuth2AuthorizationRequestRepository to save
+  the authorization request. But, since our service is stateless, we can't save it in
+  the session. We'll save the request in a Base64 encoded cookie instead.
+  */
+    @Bean
+    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //@formatter:off
@@ -91,6 +112,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .anyRequest()
                 .authenticated()
+                .and()
+                .oauth2Login()
+                .authorizationEndpoint()
+                .baseUri("/oauth2/authorize")
+                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+                .and()
+                .redirectionEndpoint()
+                .baseUri("/oauth2/callback/*")
+                .and()
+                .userInfoEndpoint()
+                .userService(customOAuth2UserService)
+                .and()
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+                .failureHandler(oAuth2AuthenticationFailureHandler)
                 .and()
                 .requestCache().requestCache(getHttpSessionRequestCache());
         //@formatter:on

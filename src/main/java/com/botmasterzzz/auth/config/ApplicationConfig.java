@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig;
 import org.jasypt.spring.properties.EncryptablePropertyPlaceholderConfigurer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -13,18 +14,37 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 @ComponentScan("com.botmasterzzz.auth")
 @EnableAsync
 @EnableWebMvc
 @Configuration
 public class ApplicationConfig {
+
+    private static List<String> clients = Arrays.asList("google", "facebook");
+
+    @Value("${oauth2.google.client.id}")
+    private String googleClientId;
+    @Value("${oauth2.google.client.secret}")
+    private String googleClientSecret;
+    @Value("${oauth2.facebook.client.id}")
+    private String facebookClientId;
+    @Value("${oauth2.facebook.client.secret}")
+    private String facebookClientSecret;
 
     @Bean
     @DependsOn("configurationEncryptor")
@@ -82,5 +102,34 @@ public class ApplicationConfig {
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
+
+
+    @Bean
+    public ClientRegistrationRepository clientRegistrationRepository() {
+        List<ClientRegistration> registrations = clients.stream()
+                .map(this::getRegistration)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        return new InMemoryClientRegistrationRepository(registrations);
+    }
+
+
+    private ClientRegistration getRegistration(String client) {
+
+        if (client.equals("google")) {
+            return CommonOAuth2Provider.GOOGLE.getBuilder(client)
+                    .clientId(googleClientId)
+                    .clientSecret(googleClientSecret)
+                    .build();
+        }
+        if (client.equals("facebook")) {
+            return CommonOAuth2Provider.FACEBOOK.getBuilder(client)
+                    .clientId(facebookClientId)
+                    .clientSecret(facebookClientSecret)
+                    .build();
+        }
+        return null;
+    }
+
 
 }
