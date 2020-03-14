@@ -87,7 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(authenticationEntryPoint)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user/me", "/login", "/signup")
+                .antMatchers("/user/me", "/oauth2/**", "/login", "/signup")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
