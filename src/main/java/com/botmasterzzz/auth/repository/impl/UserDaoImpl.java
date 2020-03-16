@@ -1,5 +1,6 @@
 package com.botmasterzzz.auth.repository.impl;
 
+import com.botmasterzzz.auth.model.AuthProvider;
 import com.botmasterzzz.auth.model.Individual;
 import com.botmasterzzz.auth.model.User;
 import com.botmasterzzz.auth.model.UserAuthEntity;
@@ -56,6 +57,7 @@ public class UserDaoImpl implements UserDao {
         Session session = sessionFactory.openSession();
         Criteria criteria = session.createCriteria(User.class);
         criteria.add(Restrictions.eq("login", login));
+        criteria.add(Restrictions.eq("provider", AuthProvider.valueOf("local")));
         criteria.addOrder(Order.asc("audWhenCreate"));
         criteria.setMaxResults(1);
         user = (User) criteria.uniqueResult();
@@ -85,6 +87,7 @@ public class UserDaoImpl implements UserDao {
         Session session = sessionFactory.openSession();
         Criteria criteria = session.createCriteria(User.class);
         criteria.add(Restrictions.eq("email", email));
+        criteria.add(Restrictions.eq("provider", AuthProvider.valueOf("local")));
         criteria.addOrder(Order.asc("audWhenCreate"));
         criteria.setMaxResults(1);
         user = (User) criteria.uniqueResult();
