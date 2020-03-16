@@ -29,7 +29,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private JwtTokenProvider tokenProvider;
     private HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
     @Value("${oauth2.redirectUriTemplate}")
-    private String redirectUriTemplate;
+    private String[] redirectUriTemplate;
 
 
     @Autowired

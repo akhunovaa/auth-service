@@ -41,10 +41,14 @@ public class ApplicationConfig {
     private String googleClientId;
     @Value("${oauth2.google.client.secret}")
     private String googleClientSecret;
+    @Value("${oauth2.google.redirectUriTemplate}")
+    private String googleRedirectUriTemplate;
     @Value("${oauth2.facebook.client.id}")
     private String facebookClientId;
     @Value("${oauth2.facebook.client.secret}")
     private String facebookClientSecret;
+    @Value("${oauth2.facebook.redirectUriTemplate}")
+    private String facebookRedirectUriTemplate;
 
     @Bean
     @DependsOn("configurationEncryptor")
@@ -120,12 +124,14 @@ public class ApplicationConfig {
             return CommonOAuth2Provider.GOOGLE.getBuilder(client)
                     .clientId(googleClientId)
                     .clientSecret(googleClientSecret)
+                    .redirectUriTemplate(googleRedirectUriTemplate)
                     .build();
         }
         if (client.equals("facebook")) {
             return CommonOAuth2Provider.FACEBOOK.getBuilder(client)
                     .clientId(facebookClientId)
                     .clientSecret(facebookClientSecret)
+                    .redirectUriTemplate(facebookRedirectUriTemplate)
                     .build();
         }
         return null;
