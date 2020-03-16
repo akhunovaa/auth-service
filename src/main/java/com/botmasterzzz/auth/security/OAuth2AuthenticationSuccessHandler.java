@@ -28,9 +28,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenProvider.class);
     private JwtTokenProvider tokenProvider;
     private HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
-    @Value("${oauth2.redirectUriTemplate}")
+    @Value("${oauth2.redirect.trusted}")
     private String[] redirectUriTemplate;
-
 
     @Autowired
     OAuth2AuthenticationSuccessHandler(JwtTokenProvider tokenProvider, HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {

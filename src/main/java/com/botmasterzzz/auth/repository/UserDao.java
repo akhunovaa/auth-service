@@ -1,5 +1,6 @@
 package com.botmasterzzz.auth.repository;
 
+import com.botmasterzzz.auth.model.Individual;
 import com.botmasterzzz.auth.model.User;
 import com.botmasterzzz.auth.model.UserAuthEntity;
 
@@ -15,12 +16,18 @@ public interface UserDao {
 
     Optional<User> findByLogin(String login);
 
+    Optional<User> findByProviderLogin(String login, Enum provider);
+
     Optional<User> findByEmail(String email);
 
     Optional<User> findById(Long id);
 
+    Optional<Individual> findByIndividualId(Long id);
+
     Boolean existsByLogin(String login);
 
     Boolean existsByEmail(String email);
+
+    void individualUpdate(Individual individual);
 
 }

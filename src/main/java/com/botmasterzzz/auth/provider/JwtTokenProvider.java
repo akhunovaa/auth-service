@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,14 +21,11 @@ import java.util.*;
 @Service
 public class JwtTokenProvider {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenProvider.class);
     @Value("${auth.tokenSecret}")
     private String secretKey;
-
     @Value("${auth.expire.time}")
     private String validityInMilliseconds;
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
-
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
@@ -77,12 +75,15 @@ public class JwtTokenProvider {
         return Long.valueOf(claims.getId());
     }
 
-
     public String createToken(Authentication authentication) {
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Long expireDateLong = new Date().getTime() + Long.valueOf(validityInMilliseconds);
         Date expiryDate = new Date(expireDateLong);
-
+        UserPrincipal userPrincipal;
+        if (authentication.getPrincipal() instanceof DefaultOidcUser) {
+            userPrincipal = (UserPrincipal) customUserDetailsService.processUser(authentication);
+        } else {
+            userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        }
         String stringId = String.valueOf(userPrincipal.getId());
         String login = userPrincipal.getLogin();
         String email = userPrincipal.getEmail();
@@ -108,7 +109,7 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest req) {
         String bearerToken = req.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7, bearerToken.length());
+            return bearerToken.substring(7);
         }
         return null;
     }
@@ -118,13 +119,13 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (MalformedJwtException ex) {
-            logger.error("Invalid JWT token");
+            LOGGER.error("Invalid JWT token");
         } catch (ExpiredJwtException ex) {
-            logger.error("Expired JWT token");
+            LOGGER.error("Expired JWT token");
         } catch (UnsupportedJwtException ex) {
-            logger.error("Unsupported JWT token");
+            LOGGER.error("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
-            logger.error("JWT claims string is empty.");
+            LOGGER.error("JWT claims string is empty.");
         }
         return false;
     }
