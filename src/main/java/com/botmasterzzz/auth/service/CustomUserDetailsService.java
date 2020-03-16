@@ -74,6 +74,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         String fulledName = (String) attributes.get("name");
         UserRole userRole = new UserRole();
         userRole.setId(4L);
+        userRole.setRoleName("USER");
         User user = new User();
         Individual individual = new Individual();
         user.setUserRole(userRole);
