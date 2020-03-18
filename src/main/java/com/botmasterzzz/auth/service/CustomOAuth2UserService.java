@@ -2,6 +2,7 @@ package com.botmasterzzz.auth.service;
 
 import com.botmasterzzz.auth.exception.OAuth2AuthenticationProcessingException;
 import com.botmasterzzz.auth.model.AuthProvider;
+import com.botmasterzzz.auth.model.Individual;
 import com.botmasterzzz.auth.model.UserRole;
 import com.botmasterzzz.auth.repository.UserDao;
 import com.botmasterzzz.auth.security.UserPrincipal;
@@ -36,7 +37,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             throw ex;
         } catch (Exception ex) {
             // Throwing an instance of AuthenticationException will trigger the OAuth2AuthenticationFailureHandler
-            throw new InternalAuthenticationServiceException(ex.getMessage(), ex.getCause());
+            throw new InternalAuthenticationServiceException("Request error occurs", ex.getCause());
         }
     }
 
@@ -45,8 +46,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if(StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
             throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 provider");
         }
-
-        Optional<User> userOptional = userDao.findByLogin(oAuth2UserInfo.getEmail());
+        String registrationProvider = oAuth2UserRequest.getClientRegistration().getRegistrationId();
+        Optional<User> userOptional = userDao.findByProviderLogin(oAuth2UserInfo.getEmail(), AuthProvider.valueOf(registrationProvider));
         User user;
         if(userOptional.isPresent()) {
             user = userOptional.get();
@@ -64,24 +65,49 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private User registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
+        String fulledName = oAuth2UserInfo.getName();
+        String name = oAuth2UserInfo.getName().contains(" ") ? oAuth2UserInfo.getName().split(" ")[0] : fulledName;
+        String surname = oAuth2UserInfo.getName().contains(" ") ? oAuth2UserInfo.getName().split(" ")[1] : fulledName;
         UserRole userRole = new UserRole();
         userRole.setId(4L);
+        userRole.setRoleName("USER");
         User user = new User();
+        Individual individual = new Individual();
         user.setUserRole(userRole);
         user.setLogin(oAuth2UserInfo.getEmail());
+        user.setName(name);
+        user.setSurname(surname);
         user.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
-        user.setName(oAuth2UserInfo.getName());
         user.setEmail(oAuth2UserInfo.getEmail());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
-        user.setId(userDao.userAdd(user));
+        user.setPassword(oAuth2UserRequest.getClientRegistration().getRegistrationId());
+        user.setNote(oAuth2UserInfo.getId());
+        Long id = userDao.userAdd(user);
+        user.setId(id);
+        individual.setId(id);
+        individual.setName(name);
+        individual.setSurname(surname);
+        individual.setNickname(fulledName);
+        individual.setDeleted(false);
+        individual.setImageUrl(oAuth2UserInfo.getImageUrl());
+        userDao.individualUpdate(individual);
         return user;
     }
 
     private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
-        existingUser.setName(oAuth2UserInfo.getName());
-        existingUser.setImageUrl(oAuth2UserInfo.getImageUrl());
+        String fulledName = oAuth2UserInfo.getName();
+        String name = oAuth2UserInfo.getName().contains(" ") ? oAuth2UserInfo.getName().split(" ")[0] : fulledName;
+        String surname = oAuth2UserInfo.getName().contains(" ") ? oAuth2UserInfo.getName().split(" ")[1] : fulledName;
+        existingUser.setName(name);
+        existingUser.setSurname(surname);
         userDao.userUpdate(existingUser);
+        Optional<Individual> optionalIndividual = userDao.findByIndividualId(existingUser.getId());
+        if (optionalIndividual.isPresent()){
+            Individual individual = optionalIndividual.get();
+            individual.setName(name);
+            individual.setSurname(surname);
+            userDao.individualUpdate(individual);
+        }
         return existingUser;
     }
-
 }
