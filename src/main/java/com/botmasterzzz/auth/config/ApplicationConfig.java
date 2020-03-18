@@ -1,6 +1,7 @@
 package com.botmasterzzz.auth.config;
 
 
+import com.botmasterzzz.auth.provider.VkOAuth2Provider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
 @Configuration
 public class ApplicationConfig {
 
-    private static List<String> clients = Arrays.asList("google", "facebook");
+    private static List<String> clients = Arrays.asList("google", "facebook", "vk");
 
     @Value("${oauth2.google.client.id}")
     private String googleClientId;
@@ -49,6 +50,12 @@ public class ApplicationConfig {
     private String facebookClientSecret;
     @Value("${oauth2.facebook.redirectUriTemplate}")
     private String facebookRedirectUriTemplate;
+    @Value("${oauth2.vk.client.id}")
+    private String vkClientId;
+    @Value("${oauth2.vk.client.secret}")
+    private String vkClientSecret;
+    @Value("${oauth2.vk.redirectUriTemplate}")
+    private String vkRedirectUriTemplate;
 
     @Bean
     @DependsOn("configurationEncryptor")
@@ -132,6 +139,13 @@ public class ApplicationConfig {
                     .clientId(facebookClientId)
                     .clientSecret(facebookClientSecret)
                     .redirectUriTemplate(facebookRedirectUriTemplate)
+                    .build();
+        }
+        if (client.equals("vk")) {
+            return VkOAuth2Provider.VK.getBuilder(client)
+                    .clientId(vkClientId)
+                    .clientSecret(vkClientSecret)
+                    .redirectUriTemplate(vkRedirectUriTemplate)
                     .build();
         }
         return null;
