@@ -41,12 +41,20 @@ public class VkOAuth2UserInfo extends OAuth2UserInfo {
 
     @SuppressWarnings("unchecked")
     public String getCity() {
-        return (String) ((LinkedHashMap)attributes.get("city")).getOrDefault("title", "Москва");
+        if (attributes.containsKey("city")){
+            return (String) ((LinkedHashMap)attributes.get("city")).getOrDefault("title", "Москва");
+        }else {
+            return null;
+        }
     }
 
     @SuppressWarnings("unchecked")
     public String getCountry() {
-        return (String) ((LinkedHashMap)attributes.get("country")).getOrDefault("title", "Россия");
+        if (attributes.containsKey("country")){
+            return (String) ((LinkedHashMap)attributes.get("country")).getOrDefault("title", "Россия");
+        }else {
+            return null;
+        }
     }
 
     public String getOriginalPhotoUrl() {

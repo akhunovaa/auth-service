@@ -62,7 +62,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
         String email = null != oAuth2UserInfo.getEmail() ? oAuth2UserInfo.getEmail() : (String) oAuth2UserRequest.getAdditionalParameters().get("email");
         if(StringUtils.isEmpty(email)) {
-            throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 provider");
+            email = oAuth2UserRequest.getAdditionalParameters().get("user_id") + "@" + oAuth2UserRequest.getClientRegistration().getRegistrationId() + ".com";
+//            throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 provider");
         }
         String registrationProvider = oAuth2UserRequest.getClientRegistration().getRegistrationId();
         Optional<User> userOptional = userDao.findByProviderLogin(email, AuthProvider.valueOf(registrationProvider));
@@ -134,7 +135,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String phone = vkOAuth2UserInfo.getHomePhone();
         String about = vkOAuth2UserInfo.getAbout();
         String email = null != oAuth2UserInfo.getEmail() ? oAuth2UserInfo.getEmail() : (String) oAuth2UserRequest.getAdditionalParameters().get("email");
-
+        if(StringUtils.isEmpty(email)) {
+            email = oAuth2UserRequest.getAdditionalParameters().get("user_id") + "@" + oAuth2UserRequest.getClientRegistration().getRegistrationId() + ".com";
+        }
         UserRole userRole = new UserRole();
         userRole.setId(4L);
         userRole.setRoleName("USER");
