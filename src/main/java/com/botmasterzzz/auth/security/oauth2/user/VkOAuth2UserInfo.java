@@ -1,19 +1,20 @@
 package com.botmasterzzz.auth.security.oauth2.user;
 
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class VkOAuth2UserInfo extends OAuth2UserInfo {
+
     public VkOAuth2UserInfo(Map<String, Object> attributes) {
         super(attributes);
     }
 
     @Override
     public String getId() {
-        return (String) attributes.get("user_id");
+        return String.valueOf(attributes.get("id"));
     }
 
     @Override
@@ -21,6 +22,7 @@ public class VkOAuth2UserInfo extends OAuth2UserInfo {
         return (String) attributes.get("first_name");
     }
 
+    @Override
     public String getLastName() {
         return (String) attributes.get("last_name");
     }
@@ -33,10 +35,15 @@ public class VkOAuth2UserInfo extends OAuth2UserInfo {
         return (String) attributes.get("nickname");
     }
 
+    public String getScreenName() {
+        return (String) attributes.get("screen_name");
+    }
+
     public Date getBirthDate() throws ParseException {
         String stringDate = (String) attributes.get("bdate");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM.d.YYYY");
-        return dateFormat.parse(stringDate);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        java.util.Date date = dateFormat.parse(stringDate);
+        return new java.sql.Date(date.getTime());
     }
 
     @SuppressWarnings("unchecked")

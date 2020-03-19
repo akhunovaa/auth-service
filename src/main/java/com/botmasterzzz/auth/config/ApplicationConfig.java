@@ -1,7 +1,7 @@
 package com.botmasterzzz.auth.config;
 
 
-import com.botmasterzzz.auth.provider.VkOAuth2Provider;
+import com.botmasterzzz.auth.provider.MyOAuth2Provider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Configuration
 public class ApplicationConfig {
 
-    private static List<String> clients = Arrays.asList("google", "facebook", "vk");
+    private static List<String> clients = Arrays.asList("google", "facebook", "vk", "yandex");
 
     @Value("${oauth2.google.client.id}")
     private String googleClientId;
@@ -56,6 +56,13 @@ public class ApplicationConfig {
     private String vkClientSecret;
     @Value("${oauth2.vk.redirectUriTemplate}")
     private String vkRedirectUriTemplate;
+    @Value("${oauth2.yandex.client.id}")
+    private String yandexClientId;
+    @Value("${oauth2.yandex.client.secret}")
+    private String yandexClientSecret;
+    @Value("${oauth2.yandex.redirectUriTemplate}")
+    private String yandexRedirectUriTemplate;
+
 
     @Bean
     @DependsOn("configurationEncryptor")
@@ -142,10 +149,17 @@ public class ApplicationConfig {
                     .build();
         }
         if (client.equals("vk")) {
-            return VkOAuth2Provider.VK.getBuilder(client)
+            return MyOAuth2Provider.VK.getBuilder(client)
                     .clientId(vkClientId)
                     .clientSecret(vkClientSecret)
                     .redirectUriTemplate(vkRedirectUriTemplate)
+                    .build();
+        }
+        if (client.equals("yandex")) {
+            return MyOAuth2Provider.YANDEX.getBuilder(client)
+                    .clientId(yandexClientId)
+                    .clientSecret(yandexClientSecret)
+                    .redirectUriTemplate(yandexRedirectUriTemplate)
                     .build();
         }
         return null;

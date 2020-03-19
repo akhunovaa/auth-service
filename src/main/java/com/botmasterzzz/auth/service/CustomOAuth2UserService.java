@@ -3,12 +3,14 @@ package com.botmasterzzz.auth.service;
 import com.botmasterzzz.auth.exception.OAuth2AuthenticationProcessingException;
 import com.botmasterzzz.auth.model.AuthProvider;
 import com.botmasterzzz.auth.model.Individual;
+import com.botmasterzzz.auth.model.User;
 import com.botmasterzzz.auth.model.UserRole;
 import com.botmasterzzz.auth.repository.UserDao;
 import com.botmasterzzz.auth.security.UserPrincipal;
 import com.botmasterzzz.auth.security.oauth2.user.OAuth2UserInfo;
 import com.botmasterzzz.auth.security.oauth2.user.OAuth2UserInfoFactory;
 import com.botmasterzzz.auth.security.oauth2.user.VkOAuth2UserInfo;
+import com.botmasterzzz.auth.security.oauth2.user.YandexOAuth2UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -26,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-import com.botmasterzzz.auth.model.User;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -60,27 +61,31 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
-        String email = null != oAuth2UserInfo.getEmail() ? oAuth2UserInfo.getEmail() : (String) oAuth2UserRequest.getAdditionalParameters().get("email");
-        if(StringUtils.isEmpty(email)) {
-            email = oAuth2UserRequest.getAdditionalParameters().get("user_id") + "@" + oAuth2UserRequest.getClientRegistration().getRegistrationId() + ".com";
-//            throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 provider");
-        }
         String registrationProvider = oAuth2UserRequest.getClientRegistration().getRegistrationId();
-        Optional<User> userOptional = userDao.findByProviderLogin(email, AuthProvider.valueOf(registrationProvider));
+        String stringedId = null != oAuth2UserInfo.getId() ? oAuth2UserInfo.getId() : (String) oAuth2UserRequest.getAdditionalParameters().get("user_id");
+        String formedLogin = stringedId + "@" + oAuth2UserRequest.getClientRegistration().getRegistrationId() + ".com";
+        Optional<User> userOptional = userDao.findByProviderLogin(formedLogin, AuthProvider.valueOf(registrationProvider));
+
         User user;
-        if(userOptional.isPresent()) {
+        if (userOptional.isPresent()) {
             user = userOptional.get();
-            if(!user.getProvider().equals(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
+            if (!user.getProvider().equals(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
                 throw new OAuth2AuthenticationProcessingException("Looks like you're signed up with " +
                         user.getProvider() + " account. Please use your " + user.getProvider() +
                         " account to login.");
             }
-            user = updateExistingUser(user, oAuth2UserInfo);
+            updateExistingUser(user, oAuth2UserInfo);
         } else {
-            if (oAuth2UserRequest.getClientRegistration().getRegistrationId().equals("vk")) {
-                user = registerNewUserFromVk(oAuth2UserRequest, oAuth2UserInfo);
-            } else {
-                user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
+            String registrationId = oAuth2UserRequest.getClientRegistration().getRegistrationId();
+            switch (registrationId){
+                case "yandex":
+                    user = registerNewUserFromYandex(oAuth2UserRequest, oAuth2UserInfo);
+                    break;
+                case "vk":
+                    user = registerNewUserFromVk(oAuth2UserRequest, oAuth2UserInfo);
+                    break;
+                default:
+                    user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
             }
         }
 
@@ -91,13 +96,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String fulledName = oAuth2UserInfo.getName();
         String name = oAuth2UserInfo.getName().contains(" ") ? oAuth2UserInfo.getName().split(" ")[0] : fulledName;
         String surname = oAuth2UserInfo.getName().contains(" ") ? oAuth2UserInfo.getName().split(" ")[1] : fulledName;
+        String formedLogin = oAuth2UserInfo.getId() + "@" + oAuth2UserRequest.getClientRegistration().getRegistrationId() + ".com";
         UserRole userRole = new UserRole();
         userRole.setId(4L);
         userRole.setRoleName("USER");
         User user = new User();
         Individual individual = new Individual();
         user.setUserRole(userRole);
-        user.setLogin(oAuth2UserInfo.getEmail());
+        user.setLogin(formedLogin);
         user.setName(name);
         user.setSurname(surname);
         user.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
@@ -119,13 +125,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private User registerNewUserFromVk(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
         VkOAuth2UserInfo vkOAuth2UserInfo = (VkOAuth2UserInfo) oAuth2UserInfo;
+        String formedLogin = oAuth2UserInfo.getId() + "@" + oAuth2UserRequest.getClientRegistration().getRegistrationId() + ".com";
         String name = vkOAuth2UserInfo.getName();
         String surname = vkOAuth2UserInfo.getLastName();
         String sex = vkOAuth2UserInfo.getSex() == 2 ? "Мужской" : "Женский";
-        String nickname = vkOAuth2UserInfo.getNickName();
+        String nickname = StringUtils.isEmpty(vkOAuth2UserInfo.getNickName()) ?  vkOAuth2UserInfo.getScreenName() : vkOAuth2UserInfo.getNickName();
         Date birthDate = null;
         try {
-            birthDate = new Date(vkOAuth2UserInfo.getBirthDate().getTime());
+            birthDate = vkOAuth2UserInfo.getBirthDate();
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -135,7 +142,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String phone = vkOAuth2UserInfo.getHomePhone();
         String about = vkOAuth2UserInfo.getAbout();
         String email = null != oAuth2UserInfo.getEmail() ? oAuth2UserInfo.getEmail() : (String) oAuth2UserRequest.getAdditionalParameters().get("email");
-        if(StringUtils.isEmpty(email)) {
+        if (StringUtils.isEmpty(email)) {
             email = oAuth2UserRequest.getAdditionalParameters().get("user_id") + "@" + oAuth2UserRequest.getClientRegistration().getRegistrationId() + ".com";
         }
         UserRole userRole = new UserRole();
@@ -144,7 +151,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         User user = new User();
         Individual individual = new Individual();
         user.setUserRole(userRole);
-        user.setLogin(email);
+        user.setLogin(formedLogin);
         user.setName(name);
         user.setSurname(surname);
         user.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
@@ -169,15 +176,63 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return user;
     }
 
+    private User registerNewUserFromYandex(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
+        YandexOAuth2UserInfo yandexOAuth2UserInfo = (YandexOAuth2UserInfo) oAuth2UserInfo;
+        String formedLogin = oAuth2UserInfo.getId() + "@" + oAuth2UserRequest.getClientRegistration().getRegistrationId() + ".com";
+        String name = yandexOAuth2UserInfo.getName();
+        String surname = yandexOAuth2UserInfo.getLastName();
+        String nickname = yandexOAuth2UserInfo.getDisplayName();
+        String sex = yandexOAuth2UserInfo.getSex().equals("male") ? "Мужской" : "Женский";
+        Date birthDate = null;
+        try {
+            birthDate = yandexOAuth2UserInfo.getBirthDate();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String email = yandexOAuth2UserInfo.getEmail();
+        String imageUrl = yandexOAuth2UserInfo.getImageUrl();
+        String login = yandexOAuth2UserInfo.getLogin();
+
+        UserRole userRole = new UserRole();
+        userRole.setId(4L);
+        userRole.setRoleName("USER");
+        User user = new User();
+        Individual individual = new Individual();
+        user.setUserRole(userRole);
+        user.setLogin(formedLogin);
+        user.setName(name);
+        user.setSurname(surname);
+        user.setPatrName(login);
+        user.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
+        user.setEmail(email);
+        user.setImageUrl(imageUrl);
+        user.setPassword(oAuth2UserRequest.getClientRegistration().getRegistrationId());
+        user.setNote(oAuth2UserInfo.getId());
+        Long id = userDao.userAdd(user);
+        user.setId(id);
+        individual.setId(id);
+        individual.setName(name);
+        individual.setSurname(surname);
+        individual.setPatrName(login);
+        individual.setNickname(nickname);
+        individual.setDeleted(false);
+        individual.setImageUrl(imageUrl);
+        individual.setBirthDate(birthDate);
+        individual.setGender(sex);
+        userDao.individualUpdate(individual);
+        return user;
+    }
+
+
     private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
         String fulledName = oAuth2UserInfo.getName();
         String name = oAuth2UserInfo.getName().contains(" ") ? oAuth2UserInfo.getName().split(" ")[0] : fulledName;
-        String surname = oAuth2UserInfo.getName().contains(" ") ? oAuth2UserInfo.getName().split(" ")[1] : fulledName;
+        String surname = oAuth2UserInfo.getName().contains(" ") ? oAuth2UserInfo.getName().split(" ")[1] :  oAuth2UserInfo.getLastName();
         existingUser.setName(name);
         existingUser.setSurname(surname);
         userDao.userUpdate(existingUser);
         Optional<Individual> optionalIndividual = userDao.findByIndividualId(existingUser.getId());
-        if (optionalIndividual.isPresent()){
+        if (optionalIndividual.isPresent()) {
             Individual individual = optionalIndividual.get();
             individual.setName(name);
             individual.setSurname(surname);
@@ -187,7 +242,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     @SuppressWarnings("unchecked")
-    private OAuth2User loadVkUser(OAuth2UserRequest oAuth2UserRequest)  {
+    private OAuth2User loadVkUser(OAuth2UserRequest oAuth2UserRequest) {
         RestTemplate template = new RestTemplate();
 
         MultiValueMap<String, String> headers = new LinkedMultiValueMap();

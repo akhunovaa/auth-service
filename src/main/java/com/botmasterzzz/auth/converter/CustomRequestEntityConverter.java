@@ -18,7 +18,6 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
     public RequestEntity<?> convert(OAuth2AuthorizationCodeGrantRequest oAuth2AuthorizationCodeGrantRequest) {
         RequestEntity<?> entity = defaultConverter.convert(oAuth2AuthorizationCodeGrantRequest);
         MultiValueMap<String, String> params = (MultiValueMap<String,String>) entity.getBody();
-        params.add("test2", "extra2");
         return new RequestEntity<>(params, entity.getHeaders(),
                 entity.getMethod(), entity.getUrl());
     }
