@@ -138,6 +138,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         user.setId(id);
         individual.setId(id);
         individual.setNickname(nickName);
+        individual.setName(nickName);
         individual.setDeleted(false);
         userDao.individualUpdate(individual);
         return user;
