@@ -43,12 +43,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         return UserPrincipal.create(user);
     }
 
+    @SuppressWarnings("unchecked")
     public UserDetails processUser(Authentication authentication) {
         DefaultOidcUser oidcUser = (DefaultOidcUser) authentication.getPrincipal();
         Map attributes = oidcUser.getAttributes();
-        String email = (String) attributes.get("email");
+        String stringedId = (String) attributes.getOrDefault("sub", authentication.getName());
         String provider = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId();
-        Optional<User> userOptional = userDao.findByProviderLogin(email, AuthProvider.valueOf(provider));
+        String formedLogin = stringedId + "@" + provider + ".com";
+        Optional<User> userOptional = userDao.findByProviderLogin(formedLogin, AuthProvider.valueOf(provider));
         User user;
         if (userOptional.isPresent()) {
             user = userOptional.get();
@@ -57,14 +59,33 @@ public class CustomUserDetailsService implements UserDetailsService {
                         user.getProvider() + " account. Please use your " + user.getProvider() +
                         " account to login.");
             }
-            user = updateExistingUser(oidcUser, user);
+            switch (provider){
+                case "google":
+                    updateExistingUser(oidcUser, user);
+                    break;
+                case "battlenet":
+                    updateExistingBattleNetUser(oidcUser, user);
+                    break;
+                default:
+                    updateExistingUser(oidcUser, user);
+            }
         } else {
-            user = registerNewUser(oidcUser, provider);
+            switch (provider){
+                case "google":
+                    user = registerNewUser(oidcUser, provider, formedLogin);
+                    break;
+                case "battlenet":
+                    user = registerNewBattleNetUser(oidcUser, provider, formedLogin);
+                    break;
+                default:
+                    user = registerNewUser(oidcUser, provider, formedLogin);
+            }
+
         }
         return UserPrincipal.create(user);
     }
 
-    private User registerNewUser(DefaultOidcUser oidcUser, String provider) {
+    private User registerNewUser(DefaultOidcUser oidcUser, String provider, String formedLogin) {
         Map attributes = oidcUser.getAttributes();
         String email = (String) attributes.get("email");
         String givenName = (String) attributes.get("given_name");
@@ -78,7 +99,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = new User();
         Individual individual = new Individual();
         user.setUserRole(userRole);
-        user.setLogin(email);
+        user.setLogin(formedLogin);
         user.setPassword(provider);
         user.setProvider(AuthProvider.valueOf(provider));
         user.setName(givenName);
@@ -98,6 +119,30 @@ public class CustomUserDetailsService implements UserDetailsService {
         return user;
     }
 
+    private User registerNewBattleNetUser(DefaultOidcUser oidcUser, String provider, String formedLogin) {
+        Map attributes = oidcUser.getAttributes();
+        String nickName = (String) attributes.get("battle_tag");
+        String atHash = (String) attributes.get("at_hash");
+        UserRole userRole = new UserRole();
+        userRole.setId(4L);
+        userRole.setRoleName("USER");
+        User user = new User();
+        Individual individual = new Individual();
+        user.setUserRole(userRole);
+        user.setLogin(formedLogin);
+        user.setPassword(provider);
+        user.setProvider(AuthProvider.valueOf(provider));
+        user.setName(nickName);
+        user.setNote(atHash);
+        Long id = userDao.userAdd(user);
+        user.setId(id);
+        individual.setId(id);
+        individual.setNickname(nickName);
+        individual.setDeleted(false);
+        userDao.individualUpdate(individual);
+        return user;
+    }
+
     private User updateExistingUser(DefaultOidcUser oidcUser, User existingUser) {
         Map attributes = oidcUser.getAttributes();
         String givenName = (String) attributes.get("given_name");
@@ -109,6 +154,22 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (optionalIndividual.isPresent()){
             Individual individual = optionalIndividual.get();
             individual.setImageUrl(existingUser.getImageUrl());
+            userDao.individualUpdate(individual);
+        }
+        return existingUser;
+    }
+
+    private User updateExistingBattleNetUser(DefaultOidcUser oidcUser, User existingUser) {
+        Map attributes = oidcUser.getAttributes();
+        String nickName = (String) attributes.get("battle_tag");
+        String atHash = (String) attributes.get("at_hash");
+        existingUser.setName(nickName);
+        existingUser.setNote(atHash);
+        userDao.userUpdate(existingUser);
+        Optional<Individual> optionalIndividual = userDao.findByIndividualId(existingUser.getId());
+        if (optionalIndividual.isPresent()){
+            Individual individual = optionalIndividual.get();
+            individual.setNickname(nickName);
             userDao.individualUpdate(individual);
         }
         return existingUser;

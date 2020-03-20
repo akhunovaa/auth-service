@@ -18,6 +18,8 @@ public class OAuth2UserInfoFactory {
             return new VkOAuth2UserInfo(attributes);
         }else if (registrationId.equalsIgnoreCase(AuthProvider.yandex.toString())) {
             return new YandexOAuth2UserInfo(attributes);
+        } else if (registrationId.equalsIgnoreCase(AuthProvider.battlenet.toString())) {
+            return new BattleNetOAuth2UserInfo(attributes);
         } else {
             throw new OAuth2AuthenticationProcessingException("Sorry! Login with " + registrationId + " is not supported yet.");
         }

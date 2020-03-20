@@ -30,6 +30,20 @@ public enum MyOAuth2Provider {
             builder.clientName("yandex");
             return builder;
         }
+    },
+
+    BATTLE_NET {
+        public ClientRegistration.Builder getBuilder(String registrationId) {
+            ClientRegistration.Builder builder = this.getBuilder(registrationId, ClientAuthenticationMethod.POST, "{baseUrl}/{action}/oauth2/code/{registrationId}");
+            builder.scope(new String[]{"openid", "d3.profile", "sc2.profile", "wow.profile"});
+            builder.authorizationUri("https://eu.battle.net/oauth/authorize");
+            builder.tokenUri("https://eu.battle.net/oauth/token");
+            builder.jwkSetUri("https://eu.battle.net/oauth/jwks/certs");
+            builder.userInfoUri("http://eu.battle.net/oauth/userinfo?region=eu");
+            builder.userNameAttributeName("sub");
+            builder.clientName("battlenet");
+            return builder;
+        }
     };
 
     MyOAuth2Provider() {

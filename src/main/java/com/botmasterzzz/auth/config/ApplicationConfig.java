@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Configuration
 public class ApplicationConfig {
 
-    private static List<String> clients = Arrays.asList("google", "facebook", "vk", "yandex");
+    private static List<String> clients = Arrays.asList("google", "facebook", "vk", "yandex", "battlenet");
 
     @Value("${oauth2.google.client.id}")
     private String googleClientId;
@@ -62,6 +62,12 @@ public class ApplicationConfig {
     private String yandexClientSecret;
     @Value("${oauth2.yandex.redirectUriTemplate}")
     private String yandexRedirectUriTemplate;
+    @Value("${oauth2.battle.net.client.id}")
+    private String battleNetClientId;
+    @Value("${oauth2.battle.net.client.secret}")
+    private String battleNetlientSecret;
+    @Value("${oauth2.battle.net.redirectUriTemplate}")
+    private String battleNetRedirectUriTemplate;
 
 
     @Bean
@@ -160,6 +166,13 @@ public class ApplicationConfig {
                     .clientId(yandexClientId)
                     .clientSecret(yandexClientSecret)
                     .redirectUriTemplate(yandexRedirectUriTemplate)
+                    .build();
+        }
+        if (client.equals("battlenet")) {
+            return MyOAuth2Provider.BATTLE_NET.getBuilder(client)
+                    .clientId(battleNetClientId)
+                    .clientSecret(battleNetlientSecret)
+                    .redirectUriTemplate(battleNetRedirectUriTemplate)
                     .build();
         }
         return null;

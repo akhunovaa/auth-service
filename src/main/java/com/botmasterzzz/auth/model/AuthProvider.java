@@ -6,5 +6,6 @@ public enum AuthProvider {
     google,
     github,
     vk,
-    yandex
+    yandex,
+    battlenet
 }
