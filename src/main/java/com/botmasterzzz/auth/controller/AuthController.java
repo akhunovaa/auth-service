@@ -1,5 +1,9 @@
 package com.botmasterzzz.auth.controller;
 
+import com.botmasterzzz.auth.entity.Individual;
+import com.botmasterzzz.auth.entity.User;
+import com.botmasterzzz.auth.entity.UserAuthEntity;
+import com.botmasterzzz.auth.entity.UserRole;
 import com.botmasterzzz.auth.exception.InvalidLoginException;
 import com.botmasterzzz.auth.model.*;
 import com.botmasterzzz.auth.payload.AuthResponse;

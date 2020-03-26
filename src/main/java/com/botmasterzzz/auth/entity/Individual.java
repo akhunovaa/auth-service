@@ -1,6 +1,7 @@
-package com.botmasterzzz.auth.model;
+package com.botmasterzzz.auth.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -200,5 +201,30 @@ public class Individual {
                 ", audWhenCreate=" + audWhenCreate +
                 ", audWhenUpdate=" + audWhenUpdate +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Individual that = (Individual) o;
+        return isDeleted == that.isDeleted &&
+                Objects.equal(id, that.id) &&
+                Objects.equal(nickname, that.nickname) &&
+                Objects.equal(name, that.name) &&
+                Objects.equal(surname, that.surname) &&
+                Objects.equal(patrName, that.patrName) &&
+                Objects.equal(imageUrl, that.imageUrl) &&
+                Objects.equal(phone, that.phone) &&
+                Objects.equal(birthDate, that.birthDate) &&
+                Objects.equal(gender, that.gender) &&
+                Objects.equal(language, that.language) &&
+                Objects.equal(city, that.city) &&
+                Objects.equal(info, that.info);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id, nickname, name, surname, patrName, imageUrl, phone, birthDate, gender, language, city, info, isDeleted);
     }
 }

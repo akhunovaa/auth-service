@@ -1,7 +1,7 @@
 package com.botmasterzzz.auth.service;
 
-import com.botmasterzzz.auth.model.User;
-import com.botmasterzzz.auth.model.UserAuthEntity;
+import com.botmasterzzz.auth.entity.User;
+import com.botmasterzzz.auth.entity.UserAuthEntity;
 
 import javax.servlet.http.HttpServletRequest;
 

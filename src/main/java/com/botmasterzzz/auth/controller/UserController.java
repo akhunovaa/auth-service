@@ -1,7 +1,7 @@
 package com.botmasterzzz.auth.controller;
 
 import com.botmasterzzz.auth.exception.ResourceNotFoundException;
-import com.botmasterzzz.auth.model.User;
+import com.botmasterzzz.auth.entity.User;
 import com.botmasterzzz.auth.repository.UserDao;
 import com.botmasterzzz.auth.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;

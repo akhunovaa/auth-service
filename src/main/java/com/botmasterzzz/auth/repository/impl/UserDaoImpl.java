@@ -1,16 +1,15 @@
 package com.botmasterzzz.auth.repository.impl;
 
 import com.botmasterzzz.auth.model.AuthProvider;
-import com.botmasterzzz.auth.model.Individual;
-import com.botmasterzzz.auth.model.User;
-import com.botmasterzzz.auth.model.UserAuthEntity;
+import com.botmasterzzz.auth.entity.Individual;
+import com.botmasterzzz.auth.entity.User;
+import com.botmasterzzz.auth.entity.UserAuthEntity;
 import com.botmasterzzz.auth.repository.UserDao;
 import org.hibernate.*;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

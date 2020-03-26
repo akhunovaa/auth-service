@@ -1,6 +1,7 @@
-package com.botmasterzzz.auth.model;
+package com.botmasterzzz.auth.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Objects;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -160,5 +161,27 @@ public class UserAuthEntity {
                 ", audWhenCreate=" + audWhenCreate +
                 ", audWhenUpdate=" + audWhenUpdate +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserAuthEntity that = (UserAuthEntity) o;
+        return Objects.equal(id, that.id) &&
+                Objects.equal(user, that.user) &&
+                Objects.equal(ipAddress, that.ipAddress) &&
+                Objects.equal(referer, that.referer) &&
+                Objects.equal(fullUrl, that.fullUrl) &&
+                Objects.equal(clientOs, that.clientOs) &&
+                Objects.equal(userAgent, that.userAgent) &&
+                Objects.equal(clientBrowser, that.clientBrowser) &&
+                Objects.equal(note, that.note) &&
+                Objects.equal(token, that.token);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id, user, ipAddress, referer, fullUrl, clientOs, userAgent, clientBrowser, note, token);
     }
 }

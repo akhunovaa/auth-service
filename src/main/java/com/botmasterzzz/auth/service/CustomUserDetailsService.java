@@ -2,9 +2,9 @@ package com.botmasterzzz.auth.service;
 
 import com.botmasterzzz.auth.exception.OAuth2AuthenticationProcessingException;
 import com.botmasterzzz.auth.model.AuthProvider;
-import com.botmasterzzz.auth.model.Individual;
-import com.botmasterzzz.auth.model.User;
-import com.botmasterzzz.auth.model.UserRole;
+import com.botmasterzzz.auth.entity.Individual;
+import com.botmasterzzz.auth.entity.User;
+import com.botmasterzzz.auth.entity.UserRole;
 import com.botmasterzzz.auth.repository.UserDao;
 import com.botmasterzzz.auth.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
