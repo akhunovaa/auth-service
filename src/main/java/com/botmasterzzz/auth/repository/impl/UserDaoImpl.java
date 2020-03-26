@@ -1,7 +1,9 @@
 package com.botmasterzzz.auth.repository.impl;
 
-import com.botmasterzzz.auth.model.User;
-import com.botmasterzzz.auth.model.UserAuthEntity;
+import com.botmasterzzz.auth.model.AuthProvider;
+import com.botmasterzzz.auth.entity.Individual;
+import com.botmasterzzz.auth.entity.User;
+import com.botmasterzzz.auth.entity.UserAuthEntity;
 import com.botmasterzzz.auth.repository.UserDao;
 import org.hibernate.*;
 import org.hibernate.criterion.Order;
@@ -47,12 +49,29 @@ public class UserDaoImpl implements UserDao {
         session.close();
     }
 
+    @Override
     @SuppressWarnings({"deprecation"})
     public Optional<User> findByLogin(String login) {
         User user;
         Session session = sessionFactory.openSession();
         Criteria criteria = session.createCriteria(User.class);
         criteria.add(Restrictions.eq("login", login));
+        criteria.add(Restrictions.eq("provider", AuthProvider.valueOf("local")));
+        criteria.addOrder(Order.asc("audWhenCreate"));
+        criteria.setMaxResults(1);
+        user = (User) criteria.uniqueResult();
+        session.close();
+        return Optional.ofNullable(user);
+    }
+
+    @Override
+    @SuppressWarnings({"deprecation"})
+    public Optional<User> findByProviderLogin(String login, Enum provider) {
+        User user;
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(User.class);
+        criteria.add(Restrictions.eq("login", login));
+        criteria.add(Restrictions.eq("provider", provider));
         criteria.addOrder(Order.asc("audWhenCreate"));
         criteria.setMaxResults(1);
         user = (User) criteria.uniqueResult();
@@ -67,6 +86,7 @@ public class UserDaoImpl implements UserDao {
         Session session = sessionFactory.openSession();
         Criteria criteria = session.createCriteria(User.class);
         criteria.add(Restrictions.eq("email", email));
+        criteria.add(Restrictions.eq("provider", AuthProvider.valueOf("local")));
         criteria.addOrder(Order.asc("audWhenCreate"));
         criteria.setMaxResults(1);
         user = (User) criteria.uniqueResult();
@@ -82,6 +102,16 @@ public class UserDaoImpl implements UserDao {
         updateTransaction.commit();
         session.close();
         return Optional.ofNullable(user);
+    }
+
+    @Override
+    public Optional<Individual> findByIndividualId(Long id) {
+        Session session = sessionFactory.openSession();
+        Transaction updateTransaction = session.beginTransaction();
+        Individual individual = session.get(Individual.class, id);
+        updateTransaction.commit();
+        session.close();
+        return Optional.ofNullable(individual);
     }
 
     @Override
@@ -120,5 +150,14 @@ public class UserDaoImpl implements UserDao {
             session.close();
         }
         return exists;
+    }
+
+    @Override
+    public void individualUpdate(Individual individual) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.saveOrUpdate(individual);
+        session.getTransaction().commit();
+        session.close();
     }
 }

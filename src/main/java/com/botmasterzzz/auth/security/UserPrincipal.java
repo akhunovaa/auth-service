@@ -1,16 +1,17 @@
 package com.botmasterzzz.auth.security;
 
-import com.botmasterzzz.auth.model.User;
+import com.botmasterzzz.auth.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-public class UserPrincipal implements UserDetails {
+public class UserPrincipal implements UserDetails, OAuth2User {
 
     private Long id;
     private String login;
@@ -33,15 +34,14 @@ public class UserPrincipal implements UserDetails {
     }
 
     public static UserPrincipal create(User user) {
-        List<GrantedAuthority> authorities = Collections.
-                singletonList(new SimpleGrantedAuthority(user.getUserRole().getRoleName()));
-
+        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+        grantedAuthorities.add(new SimpleGrantedAuthority(user.getUserRole().getRoleName()));
         return new UserPrincipal(
                 user.getId(),
                 user.getLogin(),
                 user.getEmail(),
                 user.getPassword(),
-                authorities
+                grantedAuthorities
         );
     }
 
@@ -55,13 +55,25 @@ public class UserPrincipal implements UserDetails {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
@@ -94,8 +106,8 @@ public class UserPrincipal implements UserDetails {
         return authorities;
     }
 
-    public void setAttributes(Map<String, Object> attributes) {
-        this.attributes = attributes;
+    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        this.authorities = authorities;
     }
 
     public String getName() {
@@ -106,28 +118,16 @@ public class UserPrincipal implements UserDetails {
         return login;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public void setLogin(String login) {
         this.login = login;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        this.authorities = authorities;
-    }
-
     public Map<String, Object> getAttributes() {
         return attributes;
+    }
+
+    public void setAttributes(Map<String, Object> attributes) {
+        this.attributes = attributes;
     }
 
     public boolean isExpired() {
@@ -145,5 +145,4 @@ public class UserPrincipal implements UserDetails {
     public void setIssuer(String issuer) {
         this.issuer = issuer;
     }
-
 }

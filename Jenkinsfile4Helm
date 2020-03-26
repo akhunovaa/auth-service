@@ -12,6 +12,7 @@ pipeline {
         namespace4upgrade = "${env.UPGRADE_NAMESPACE}"
         dockerImageTag = "${env.DOCKER_IMAGE_TAG}"
         portForDeploy = get_port()
+        profile4install = get_profile()
         replicaCount = "${env.REPLICA_COUNT}"
     }
 
@@ -28,7 +29,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Clean Build'
-                sh 'mvn clean compile -P dev'
+                sh "mvn clean compile -P $profile4install"
             }
         }
 
@@ -39,30 +40,30 @@ pipeline {
             }
         }
 
-        stage('SonarQube') {
-            environment {
-                scannerHome = tool 'botmasterzzz-sonar-scanner'
-            }
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh "${scannerHome}/bin/sonar-scanner"
-                }
-                script {
-                    timeout(time: 1, unit: 'HOURS') {
-                        def qg = waitForQualityGate()
-                        if (qg.status != 'OK') {
-                            echo "Status: ${qg.status}"
-                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                        }
-                    }
-                }
-            }
-        }
+//        stage('SonarQube') {
+//            environment {
+//                scannerHome = tool 'botmasterzzz-sonar-scanner'
+//            }
+//            steps {
+//                withSonarQubeEnv('SonarQube') {
+//                    sh "${scannerHome}/bin/sonar-scanner"
+//                }
+//                script {
+//                    timeout(time: 1, unit: 'HOURS') {
+//                        def qg = waitForQualityGate()
+//                        if (qg.status != 'OK') {
+//                            echo "Status: ${qg.status}"
+//                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         stage('Package') {
             steps {
                 echo 'Packaging'
-                sh 'mvn clean package -P dev'
+                sh "mvn clean package -P $profile4install"
             }
         }
 
@@ -134,6 +135,20 @@ def get_port() {
         case 'prom':
             return '8058'
         default:
-            return '7100'
+            return '8060'
+    }
+}
+
+def get_profile() {
+    def stend = "${env.UPGRADE_NAMESPACE}"
+    switch (stend) {
+        case 'dev':
+            return 'dev'
+        case 'master':
+            return 'master'
+        case 'prom':
+            return 'prod'
+        default:
+            return 'dev'
     }
 }

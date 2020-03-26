@@ -1,7 +1,7 @@
 package com.botmasterzzz.auth.service.impl;
 
 import com.botmasterzzz.auth.dto.UserDTO;
-import com.botmasterzzz.auth.model.User;
+import com.botmasterzzz.auth.entity.User;
 import com.botmasterzzz.auth.repository.UserDao;
 import com.botmasterzzz.auth.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;

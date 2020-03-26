@@ -1,10 +1,12 @@
 package com.botmasterzzz.auth.config;
 
 
+import com.botmasterzzz.auth.provider.MyOAuth2Provider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig;
 import org.jasypt.spring.properties.EncryptablePropertyPlaceholderConfigurer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -13,18 +15,60 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 @ComponentScan("com.botmasterzzz.auth")
 @EnableAsync
 @EnableWebMvc
 @Configuration
 public class ApplicationConfig {
+
+    private static List<String> clients = Arrays.asList("google", "facebook", "vk", "yandex", "battlenet");
+
+    @Value("${oauth2.google.client.id}")
+    private String googleClientId;
+    @Value("${oauth2.google.client.secret}")
+    private String googleClientSecret;
+    @Value("${oauth2.google.redirectUriTemplate}")
+    private String googleRedirectUriTemplate;
+    @Value("${oauth2.facebook.client.id}")
+    private String facebookClientId;
+    @Value("${oauth2.facebook.client.secret}")
+    private String facebookClientSecret;
+    @Value("${oauth2.facebook.redirectUriTemplate}")
+    private String facebookRedirectUriTemplate;
+    @Value("${oauth2.vk.client.id}")
+    private String vkClientId;
+    @Value("${oauth2.vk.client.secret}")
+    private String vkClientSecret;
+    @Value("${oauth2.vk.redirectUriTemplate}")
+    private String vkRedirectUriTemplate;
+    @Value("${oauth2.yandex.client.id}")
+    private String yandexClientId;
+    @Value("${oauth2.yandex.client.secret}")
+    private String yandexClientSecret;
+    @Value("${oauth2.yandex.redirectUriTemplate}")
+    private String yandexRedirectUriTemplate;
+    @Value("${oauth2.battle.net.client.id}")
+    private String battleNetClientId;
+    @Value("${oauth2.battle.net.client.secret}")
+    private String battleNetlientSecret;
+    @Value("${oauth2.battle.net.redirectUriTemplate}")
+    private String battleNetRedirectUriTemplate;
+
 
     @Bean
     @DependsOn("configurationEncryptor")
@@ -82,5 +126,57 @@ public class ApplicationConfig {
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
+
+
+    @Bean
+    public ClientRegistrationRepository clientRegistrationRepository() {
+        List<ClientRegistration> registrations = clients.stream()
+                .map(this::getRegistration)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        return new InMemoryClientRegistrationRepository(registrations);
+    }
+
+
+    private ClientRegistration getRegistration(String client) {
+
+        if (client.equals("google")) {
+            return CommonOAuth2Provider.GOOGLE.getBuilder(client)
+                    .clientId(googleClientId)
+                    .clientSecret(googleClientSecret)
+                    .redirectUriTemplate(googleRedirectUriTemplate)
+                    .build();
+        }
+        if (client.equals("facebook")) {
+            return CommonOAuth2Provider.FACEBOOK.getBuilder(client)
+                    .clientId(facebookClientId)
+                    .clientSecret(facebookClientSecret)
+                    .redirectUriTemplate(facebookRedirectUriTemplate)
+                    .build();
+        }
+        if (client.equals("vk")) {
+            return MyOAuth2Provider.VK.getBuilder(client)
+                    .clientId(vkClientId)
+                    .clientSecret(vkClientSecret)
+                    .redirectUriTemplate(vkRedirectUriTemplate)
+                    .build();
+        }
+        if (client.equals("yandex")) {
+            return MyOAuth2Provider.YANDEX.getBuilder(client)
+                    .clientId(yandexClientId)
+                    .clientSecret(yandexClientSecret)
+                    .redirectUriTemplate(yandexRedirectUriTemplate)
+                    .build();
+        }
+        if (client.equals("battlenet")) {
+            return MyOAuth2Provider.BATTLE_NET.getBuilder(client)
+                    .clientId(battleNetClientId)
+                    .clientSecret(battleNetlientSecret)
+                    .redirectUriTemplate(battleNetRedirectUriTemplate)
+                    .build();
+        }
+        return null;
+    }
+
 
 }

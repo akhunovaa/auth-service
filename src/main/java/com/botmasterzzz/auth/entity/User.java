@@ -1,7 +1,9 @@
-package com.botmasterzzz.auth.model;
+package com.botmasterzzz.auth.entity;
 
+import com.botmasterzzz.auth.model.AuthProvider;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -184,5 +186,30 @@ public class User {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return emailVerified == user.emailVerified &&
+                Objects.equal(id, user.id) &&
+                Objects.equal(login, user.login) &&
+                Objects.equal(password, user.password) &&
+                Objects.equal(name, user.name) &&
+                Objects.equal(surname, user.surname) &&
+                Objects.equal(patrName, user.patrName) &&
+                Objects.equal(phone, user.phone) &&
+                Objects.equal(note, user.note) &&
+                Objects.equal(email, user.email) &&
+                Objects.equal(imageUrl, user.imageUrl) &&
+                Objects.equal(userRole, user.userRole) &&
+                provider == user.provider;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id, login, password, name, surname, patrName, phone, note, email, emailVerified, imageUrl, userRole, provider);
     }
 }

@@ -1,10 +1,11 @@
 package com.botmasterzzz.auth.controller;
 
+import com.botmasterzzz.auth.entity.Individual;
+import com.botmasterzzz.auth.entity.User;
+import com.botmasterzzz.auth.entity.UserAuthEntity;
+import com.botmasterzzz.auth.entity.UserRole;
 import com.botmasterzzz.auth.exception.InvalidLoginException;
-import com.botmasterzzz.auth.model.AuthProvider;
-import com.botmasterzzz.auth.model.User;
-import com.botmasterzzz.auth.model.UserAuthEntity;
-import com.botmasterzzz.auth.model.UserRole;
+import com.botmasterzzz.auth.model.*;
 import com.botmasterzzz.auth.payload.AuthResponse;
 import com.botmasterzzz.auth.payload.LoginRequest;
 import com.botmasterzzz.auth.payload.SignUpRequest;
@@ -108,7 +109,16 @@ public class AuthController {
         user.setProvider(AuthProvider.local);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setUserRole(userRole);
-        user.setId(userDao.userAdd(user));
+        Long id = userDao.userAdd(user);
+        user.setId(id);
+        Individual individual = new Individual();
+        individual.setId(id);
+        individual.setName(signUpRequest.getName());
+        individual.setSurname(signUpRequest.getSurname());
+        individual.setPatrName(signUpRequest.getPatrName());
+        individual.setPhone(signUpRequest.getPhone());
+        individual.setDeleted(false);
+        userDao.individualUpdate(individual);
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signUpRequest.getLogin(), signUpRequest.getPassword()));
         } catch (BadCredentialsException badCredentialsException) {

@@ -1,7 +1,7 @@
 package com.botmasterzzz.auth.service.impl;
 
-import com.botmasterzzz.auth.model.User;
-import com.botmasterzzz.auth.model.UserAuthEntity;
+import com.botmasterzzz.auth.entity.User;
+import com.botmasterzzz.auth.entity.UserAuthEntity;
 import com.botmasterzzz.auth.repository.UserDao;
 import com.botmasterzzz.auth.service.AsyncLoggerService;
 import org.slf4j.Logger;
