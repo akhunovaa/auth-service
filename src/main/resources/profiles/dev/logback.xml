@@ -1,48 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration debug="true">
+<configuration>
 
-    <property name="HOME_LOG" value="logs/app.log"/>
-
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
-                %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
-            </Pattern>
-        </layout>
-    </appender>
-
-    <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${HOME_LOG}</file>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>logs/archived/app.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <!-- each archived file, size max 10MB -->
-            <maxFileSize>10MB</maxFileSize>
-            <!-- total size of all archive files, if total size > 20GB, it will delete old archived file -->
-            <totalSizeCap>20GB</totalSizeCap>
-            <!-- 60 days to keep -->
-            <maxHistory>60</maxHistory>
-        </rollingPolicy>
-
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d %p %c{1.} [%t] %m%n</pattern>
+            <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{60} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- https://logback.qos.ch/manual/appenders.html#AsyncAppender -->
-    <!-- AsyncAppender will drop events of level TRACE, DEBUG and INFO if its queue is 80% full -->
-    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="FILE-ROLLING" />
-        <!-- defaulr 256 -->
-        <queueSize>512</queueSize>
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- file property left unset/blank for TimeBasedRollingPolicy. текущий файл будет всегда новый -->
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>logs/botmasterzzz-yourapi-api-service/backend.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 500MB -->
+                <maxFileSize>500MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <charset>UTF-8</charset>
+            <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{60} - %msg%n</pattern>
+            <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
+                <customFields>{"App":"botmasterzzz-auth"}</customFields>
+                <timestampFormat>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampFormat>
+                <timestampFormatTimezoneId>Etc/UTC</timestampFormatTimezoneId>
+                <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+                    <prettyPrint>true</prettyPrint>
+                </jsonFormatter>
+            </layout>
+        </encoder>
     </appender>
 
-    <logger name="ru.yourapi" level="debug" additivity="false">
-        <appender-ref ref="ASYNC"/>
-        <appender-ref ref="CONSOLE"/>
-    </logger>
-
-    <root level="debug">
-        <appender-ref ref="CONSOLE"/>
+    <root level="${log.level}">
+        <appender-ref ref="stdout" />
+        <appender-ref ref="file" />
     </root>
+
 </configuration>
