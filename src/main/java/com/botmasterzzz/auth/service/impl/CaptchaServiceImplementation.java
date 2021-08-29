@@ -25,6 +25,9 @@ public class CaptchaServiceImplementation implements CaptchaService {
     @Value("${google.recaptcha.key.secret}")
     private String secretKeySecret;
 
+    @Value("${google.android.recaptcha.key.secret}")
+    private String secretAndroidKeySecret;
+
     @Autowired
     private ReCaptchaAttemptService reCaptchaAttemptService;
 
@@ -35,17 +38,20 @@ public class CaptchaServiceImplementation implements CaptchaService {
             throw new InvalidReCaptchaException("Ошибка в проверки возвращаемой строки в капча");
         }
 
-        URI verifyUri = URI.create(String.format(
-                GOOGLE_CAPTCHA_URL,
-                secretKeySecret, response, clientIp));
+        URI verifyUri = URI.create(String.format(GOOGLE_CAPTCHA_URL, secretKeySecret, response, clientIp));
+        URI androidVerifyUri = URI.create(String.format(GOOGLE_CAPTCHA_URL, secretAndroidKeySecret, response, clientIp));
 
         GoogleResponse googleResponse = new RestTemplate().getForObject(verifyUri, GoogleResponse.class);
 
         if (!googleResponse.isSuccess()) {
-            if (googleResponse.hasClientError()) {
-                reCaptchaAttemptService.reCaptchaFailed(clientIp);
+            googleResponse = new RestTemplate().getForObject(androidVerifyUri, GoogleResponse.class);
+            if (!googleResponse.isSuccess()) {
+                if (googleResponse.hasClientError()) {
+                    reCaptchaAttemptService.reCaptchaFailed(clientIp);
+                }
+                throw new InvalidReCaptchaException("Неудачная проверка строки в капча");
             }
-            throw new InvalidReCaptchaException("Неудачная проверка строки в капча");
+            reCaptchaAttemptService.reCaptchaSucceeded(clientIp);
         }
         reCaptchaAttemptService.reCaptchaSucceeded(clientIp);
     }

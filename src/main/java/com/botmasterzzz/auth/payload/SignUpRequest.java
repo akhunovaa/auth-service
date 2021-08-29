@@ -14,7 +14,7 @@ public class SignUpRequest {
     @Size(max = 50)
     private String patrName;
 
-    @Size(min = 6, max = 50, message = "Email должен состоять как минимум из 6 символов")
+    //@Size(min = 6, max = 50, message = "Email должен состоять как минимум из 6 символов")
     private String email;
 
     @Size(max = 50)
